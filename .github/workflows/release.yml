@@ -21,7 +21,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22'
+          go-version: '1.23'
       - name: Set build environment variables
         run: |
           echo "BUILD_DATE=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
@@ -42,7 +42,7 @@ jobs:
       - name: Run linter
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.59.1
+          version: v2.3.1
           args: --verbose
 
       - name: Run GoReleaser Dev
@@ -83,7 +83,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22'
+          go-version: '1.23'
       - name: Set build environment variables
         run: |
           echo "BUILD_DATE=$(date +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
@@ -91,7 +91,7 @@ jobs:
       - name: Run linter
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.59.1
+          version: v2.3.1
           args: --verbose
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
