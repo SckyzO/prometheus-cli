@@ -29,10 +29,10 @@ A powerful command-line tool for querying Prometheus metrics with advanced autoc
     - [Cross-compilation](#cross-compilation)
   - [📁 Project Structure](#-project-structure)
   - [📄 License](#-license)
+  - [📸 Screenshots](#-screenshots)
   - [📝 Version History](#-version-history)
-    - [v2.0.0 - Complete Go Rewrite 🚀](#v200---complete-go-rewrite-)
-    - [v2.1.0 - Enhanced Usability and Display 🚀](#v210---enhanced-usability-and-display-)
-    - [v1.0.0 - Original Python Implementation](#v100---original-python-implementation)
+  - [📝 Changelog](CHANGELOG.md)
+
 
 ## 📝 Overview
 
@@ -156,11 +156,6 @@ Prometheus CLI supports the following command line options:
 ./bin/prom-cli --url="https://prometheus-server:9090" --username="admin" --password="secret"
 ```
 
-**With special characters in credentials:**
-```bash
-./bin/prom-cli --url="https://prometheus-server:9090" --username="user@domain" --password="p@ssw0rd!"
-```
-
 **Skipping TLS verification (for self-signed certificates):**
 ```bash
 ./bin/prom-cli --url="https://prometheus-server:9090" --insecure
@@ -170,6 +165,25 @@ Prometheus CLI supports the following command line options:
 ```bash
 ./bin/prom-cli --enable-label-values=false
 ```
+
+## 📸 Screenshots
+
+Here are some screenshots demonstrating the Prometheus CLI in action:
+
+### Example 1: Two simple metrics
+![Example 1: Two simple metrics](img/screenshot_01.png)
+
+### Example 2: Metric calculations
+![Example 2: Metric calculations](img/screenshot_02.png)
+
+### Example 3: Rate over time and calculation
+![Example 3: Rate over time and calculation](img/screenshot_03.png)
+
+### Autocompletion in action (1)
+![Autocompletion in action 1](img/screenshot_04.png)
+
+### Autocompletion in action (2)
+![Autocompletion in action 2](img/screenshot_05.png)
 
 ## 🛠️ Development
 
@@ -204,26 +218,20 @@ make build-windows
 make build-macos
 ```
 
-## 📁 Project Structure
-
-```
-prometheus-cli/
-├── cmd/prom-cli/           # Main application entry point
-├── internal/
-│   ├── completion/         # Advanced autocompletion system
-│   ├── prometheus/         # Prometheus API client
-│   └── display/           # Table display functionality
-├── test/                  # Integration tests
-├── python/               # Original Python implementation (v1.0)
-├── bin/                  # Compiled binaries
-└── Makefile             # Build automation
-```
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 📝 Version History
+
+### v2.1.0 - Enhanced Usability and Display 🚀
+**Major Features:**
+- **📝 Configurable History**: Added `--history-file` and `--persist-history` flags for flexible command history management.
+- **🐛 Improved Debugging**: Enhanced `--debug` flag with more verbose output for initialization and error diagnosis.
+- **💡 Optional Tips**: Introduced `--tips` flag to control the display of detailed feature and usage tips on startup.
+- **📊 Optimized Table Display**: Improved table rendering for queries with many labels, preventing excessive width issues.
+
+**Technical Enhancements:**
+- Refined error handling and logging for better debugging experience.
+- Improved command-line option parsing and validation.
+- Implemented intelligent column limiting and header truncation for better readability.
+- Fixed compilation issues with help text formatting.
 
 ### v2.0.0 - Complete Go Rewrite 🚀
 **Major Features:**
@@ -251,21 +259,26 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Memory-efficient data structures and algorithms
 - Robust error handling and user feedback
 
-### v2.1.0 - Enhanced Usability and Display 🚀
-**Major Features:**
-- **📝 Configurable History**: Added `--history-file` and `--persist-history` flags for flexible command history management.
-- **🐛 Improved Debugging**: Enhanced `--debug` flag with more verbose output for initialization and error diagnosis.
-- **💡 Optional Tips**: Introduced `--tips` flag to control the display of detailed feature and usage tips on startup.
-- **📊 Optimized Table Display**: Improved table rendering for queries with many labels, preventing excessive width issues.
-
-**Technical Enhancements:**
-- Refined error handling and logging for better debugging experience.
-- Improved command-line option parsing and validation.
-- Implemented intelligent column limiting and header truncation for better readability.
-- Fixed compilation issues with help text formatting.
-
 ### v1.0.0 - Original Python Implementation
 - Basic Prometheus querying functionality
 - Simple table output
 - Basic metric name autocompletion
 
+## 📁 Project Structure
+
+```
+prometheus-cli/
+├── cmd/prom-cli/           # Main application entry point
+├── internal/
+│   ├── completion/         # Advanced autocompletion system
+│   ├── prometheus/         # Prometheus API client
+│   └── display/           # Table display functionality
+├── test/                  # Integration tests
+├── python/               # Original Python implementation (v1.0)
+├── bin/                  # Compiled binaries
+└── Makefile             # Build automation
+```
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
