@@ -107,7 +107,9 @@ func main() {
 		} else {
 			historyFilePath = tempFile.Name()
 			shouldRemoveHistoryFile = !*persistHistory // Still remove if not explicitly persisted
-			defer tempFile.Close()
+			if err := tempFile.Close(); err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: could not close temp history file: %v\n", err)
+			}
 			if *debug {
 				fmt.Printf("Debug: Using temporary history file: %s (persist: %t)\n", historyFilePath, *persistHistory)
 			}
@@ -124,7 +126,9 @@ func main() {
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Warning: could not create history file %s: %v\n", historyFilePath, err)
 			} else {
-				file.Close()
+				if err := file.Close(); err != nil {
+					fmt.Fprintf(os.Stderr, "Warning: could not close history file %s: %v\n", historyFilePath, err)
+				}
 			}
 		}
 
@@ -170,7 +174,7 @@ func printWelcomeMessage() {
 	fmt.Println("Enter Prometheus queries. Press Ctrl+C to exit.")
 
 	if *tips {
-		fmt.Println(`
+		fmt.Print(`
 ✨ Features:
 	 - Metric Names: Smart autocompletion for all available Prometheus metrics
 	 - Label Names: Context-aware label suggestions when typing "metric{"
