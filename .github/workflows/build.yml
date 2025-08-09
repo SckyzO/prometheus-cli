@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     name: Build and Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
         go-version: ['1.21', '1.22']
@@ -25,12 +25,13 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go-version }}
+        cache: false
 
     - name: Get dependencies
       run: go mod download
 
     - name: Build
-      run: go build -v -o prom-cli-${{ matrix.platform }} ./cmd/prom-cli
+      run: go build -v -o prom-cli-${{ runner.os }}-go${{ matrix.go-version }}${{ runner.os == 'Windows' && '.exe' || '' }} ./cmd/prom-cli
 
     - name: Test
       run: go test -v ./...
@@ -38,8 +39,8 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: prom-cli-${{ matrix.platform }}
-        path: prom-cli-${{ matrix.platform }}
+        name: prom-cli-${{ runner.os }}-go${{ matrix.go-version }}
+        path: prom-cli-${{ runner.os }}-go${{ matrix.go-version }}${{ runner.os == 'Windows' && '.exe' || '' }}
 
   release:
     name: Create Release
@@ -65,13 +66,13 @@ jobs:
         draft: false
         prerelease: false
         
-    - name: Upload Release Assets
+    - name: Upload Release Assets (Linux)
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./prom-cli-ubuntu-latest
+        asset_path: ./prom-cli-Linux-go1.22
         asset_name: prom-cli-linux
         asset_content_type: application/octet-stream
         
@@ -81,7 +82,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./prom-cli-macos-latest
+        asset_path: ./prom-cli-macOS-go1.22
         asset_name: prom-cli-macos
         asset_content_type: application/octet-stream
         
@@ -91,6 +92,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./prom-cli-windows-latest
+        asset_path: ./prom-cli-Windows-go1.22.exe
         asset_name: prom-cli-windows.exe
         asset_content_type: application/octet-stream
