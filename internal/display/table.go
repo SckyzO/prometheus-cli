@@ -98,6 +98,12 @@ func DisplayTable(results []prometheus.QueryResult) {
 	// Configure and render the table
 	// Using Header() and Bulk() methods for automatic formatting with separators
 	table.Header(headers)
-	table.Bulk(rows)
-	table.Render()
+
+	if err := table.Bulk(rows); err != nil {
+		fmt.Printf("Error adding bulk data to table: %v\n", err)
+	}
+
+	if err := table.Render(); err != nil {
+		fmt.Printf("Error rendering table: %v\n", err)
+	}
 }

@@ -24,19 +24,26 @@ func TestDisplayTable(t *testing.T) {
 
 	// Capture stdout
 	oldStdout := os.Stdout
-	r, w, _ := os.Pipe()
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("Failed to create pipe: %v", err)
+	}
 	os.Stdout = w
 
 	// Call the function
 	DisplayTable(results)
 
 	// Restore stdout
-	w.Close()
+	if err := w.Close(); err != nil {
+		t.Errorf("Failed to close writer: %v", err)
+	}
 	os.Stdout = oldStdout
 
 	// Read the captured output
 	var buf bytes.Buffer
-	io.Copy(&buf, r)
+	if _, err := io.Copy(&buf, r); err != nil {
+		t.Errorf("Failed to copy from reader: %v", err)
+	}
 
 	// Check the output
 	if buf.Len() == 0 {
@@ -69,19 +76,26 @@ func TestDisplayTableNoResults(t *testing.T) {
 
 	// Capture stdout
 	oldStdout := os.Stdout
-	r, w, _ := os.Pipe()
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("Failed to create pipe: %v", err)
+	}
 	os.Stdout = w
 
 	// Call the function
 	DisplayTable(results)
 
 	// Restore stdout
-	w.Close()
+	if err := w.Close(); err != nil {
+		t.Errorf("Failed to close writer: %v", err)
+	}
 	os.Stdout = oldStdout
 
 	// Read the captured output
 	var buf bytes.Buffer
-	io.Copy(&buf, r)
+	if _, err := io.Copy(&buf, r); err != nil {
+		t.Errorf("Failed to copy from reader: %v", err)
+	}
 
 	// Check the output
 	if !bytes.Contains(buf.Bytes(), []byte("No results found")) {

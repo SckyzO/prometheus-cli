@@ -15,7 +15,11 @@ func TestBinaryCompiles(t *testing.T) {
 	}
 
 	// Clean up
-	defer os.Remove("prom_cli_test")
+	defer func() {
+		if err := os.Remove("prom_cli_test"); err != nil {
+			t.Logf("Failed to remove test binary: %v", err)
+		}
+	}()
 
 	// Check that the binary exists
 	_, err = os.Stat("prom_cli_test")
@@ -38,7 +42,11 @@ func TestMockPrometheus(t *testing.T) {
 	}
 
 	// Clean up
-	defer os.Remove("prom_cli_test")
+	defer func() {
+		if err := os.Remove("prom_cli_test"); err != nil {
+			t.Logf("Failed to remove test binary: %v", err)
+		}
+	}()
 
 	// Check that the binary exists and is executable
 	info, err := os.Stat("prom_cli_test")

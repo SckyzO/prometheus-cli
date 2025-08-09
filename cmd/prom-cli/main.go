@@ -70,7 +70,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer l.Close()
+	defer func() {
+		if err := l.Close(); err != nil {
+			fmt.Printf("Error closing readline: %v\n", err)
+		}
+	}()
 
 	// Display welcome message and feature information
 	printWelcomeMessage()

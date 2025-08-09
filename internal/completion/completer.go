@@ -83,6 +83,11 @@ func getLabelsForMetric(metricName string) ([]string, error) {
 		}
 	}
 
+	// Ensure results is not nil to prevent nil pointer dereference
+	if results == nil {
+		return []string{}, nil
+	}
+
 	// Extract unique labels from all metric instances
 	labelSet := make(map[string]bool)
 	for _, result := range results {
@@ -132,6 +137,11 @@ func getLabelValuesForMetric(metricName, labelName string) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	// Ensure results is not nil to prevent nil pointer dereference
+	if results == nil {
+		return []string{}, nil
 	}
 
 	// Extract unique values for the specified label

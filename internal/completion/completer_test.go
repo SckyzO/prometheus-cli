@@ -96,9 +96,11 @@ func TestNewAdvancedCompleter(t *testing.T) {
 	completer := NewAdvancedCompleter(metrics, true)
 
 	if completer == nil {
-		t.Error("Expected completer to be created")
+		t.Fatal("Expected completer to be created, got nil")
+		return // This ensures we don't continue if completer is nil
 	}
 
+	// These checks are only executed if completer is not nil
 	if len(completer.metrics) != 2 {
 		t.Errorf("Expected 2 metrics, got %d", len(completer.metrics))
 	}

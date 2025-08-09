@@ -32,7 +32,7 @@ BINARY_WINDOWS=$(BIN_DIR)/$(BINARY_NAME).exe
 BINARY_MACOS=$(BIN_DIR)/$(BINARY_NAME)_macos
 
 # Main targets
-.PHONY: all build clean test fmt vet run deps help
+.PHONY: all build clean test fmt vet run deps lint help
 
 all: test build
 
@@ -58,6 +58,12 @@ run: build
 
 deps:
 	$(GOMOD) download
+
+# Linting target
+lint:
+	@command -v golangci-lint >/dev/null 2>&1 || { echo "golangci-lint is not installed. Please install it from https://golangci-lint.run/usage/install/"; exit 1; }
+	@echo "Running golangci-lint..."
+	@golangci-lint run --verbose
 
 # Cross-compilation targets
 .PHONY: build-all build-linux build-windows build-macos
@@ -87,6 +93,7 @@ help:
 	@echo "  vet        - Run go vet"
 	@echo "  run        - Build and run the binary"
 	@echo "  deps       - Download dependencies"
+	@echo "  lint       - Run golangci-lint to check code quality"
 	@echo "  build-all  - Build binaries for Linux, Windows, and macOS"
 	@echo "  build-linux   - Build binary for Linux"
 	@echo "  build-windows - Build binary for Windows"

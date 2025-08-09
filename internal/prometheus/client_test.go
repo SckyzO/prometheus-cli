@@ -13,7 +13,9 @@ func TestGetMetrics(t *testing.T) {
 			// Return a sample response
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"status":"success","data":["metric1","metric2","metric3"]}`))
+			if _, err := w.Write([]byte(`{"status":"success","data":["metric1","metric2","metric3"]}`)); err != nil {
+				t.Fatalf("Failed to write response: %v", err)
+			}
 		} else {
 			w.WriteHeader(http.StatusNotFound)
 		}
@@ -58,7 +60,7 @@ func TestQueryPrometheus(t *testing.T) {
 			// Return a sample response
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{
+			if _, err := w.Write([]byte(`{
 				"status":"success",
 				"data":{
 					"resultType":"vector",
@@ -69,7 +71,9 @@ func TestQueryPrometheus(t *testing.T) {
 						}
 					]
 				}
-			}`))
+			}`)); err != nil {
+				t.Fatalf("Failed to write response: %v", err)
+			}
 		} else {
 			w.WriteHeader(http.StatusNotFound)
 		}
@@ -123,7 +127,9 @@ func TestGetLabels(t *testing.T) {
 			// Return a sample response
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"status":"success","data":["job","instance","__name__"]}`))
+			if _, err := w.Write([]byte(`{"status":"success","data":["job","instance","__name__"]}`)); err != nil {
+				t.Fatalf("Failed to write response: %v", err)
+			}
 		} else {
 			w.WriteHeader(http.StatusNotFound)
 		}
@@ -162,7 +168,9 @@ func TestGetLabelValues(t *testing.T) {
 			// Return a sample response
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(`{"status":"success","data":["prometheus","node_exporter","alertmanager"]}`))
+			if _, err := w.Write([]byte(`{"status":"success","data":["prometheus","node_exporter","alertmanager"]}`)); err != nil {
+				t.Fatalf("Failed to write response: %v", err)
+			}
 		} else {
 			w.WriteHeader(http.StatusNotFound)
 		}
