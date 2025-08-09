@@ -1,6 +1,6 @@
 # 🔍 Prometheus CLI
 
-[![Build Prometheus CLI](https://github.com/yourusername/prometheus-cli/actions/workflows/release.yml/badge.svg)](https://github.com/yourusername/prometheus-cli/actions/workflows/release.yml)
+[![Build Prometheus CLI](https://github.com/SckyzO/prometheus-cli/actions/workflows/release.yml/badge.svg)](https://github.com/SckyzO/prometheus-cli/actions/workflows/release.yml)
 [![Go Version](https://img.shields.io/badge/Go-1.21%2B-blue.svg)](https://golang.org/doc/devel/release.html#go1.21)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -75,7 +75,7 @@ Prometheus CLI is a modern, feature-rich tool that allows you to query Prometheu
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/prometheus-cli.git
+   git clone https://github.com/SckyzO/prometheus-cli.git
    cd prometheus-cli
    ```
 
@@ -92,7 +92,7 @@ Prometheus CLI is a modern, feature-rich tool that allows you to query Prometheu
 ### Using Go
 
 ```bash
-go install github.com/yourusername/prometheus-cli/cmd/prom-cli@latest
+go install github.com/SckyzO/prometheus-cli/cmd/prom-cli@latest
 ```
 
 ## 🚀 Usage
