@@ -4,7 +4,7 @@
 [![Go Version](https://img.shields.io/badge/Go-1.21%2B-blue.svg)](https://golang.org/doc/devel/release.html#go1.21)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A command-line tool for querying Prometheus metrics with autocompletion.
+A powerful command-line tool for querying Prometheus metrics with advanced autocompletion capabilities.
 
 ## 📋 Table of Contents
 
@@ -12,6 +12,10 @@ A command-line tool for querying Prometheus metrics with autocompletion.
   - [📋 Table of Contents](#-table-of-contents)
   - [📝 Overview](#-overview)
   - [✨ Features](#-features)
+    - [🔍 Core Functionality](#-core-functionality)
+    - [🔄 Advanced Autocompletion](#-advanced-autocompletion)
+    - [🔒 Security \& Authentication](#-security--authentication)
+    - [⚙️ Configuration](#️-configuration)
   - [📥 Installation](#-installation)
     - [From Source](#from-source)
     - [Using Go](#using-go)
@@ -26,50 +30,66 @@ A command-line tool for querying Prometheus metrics with autocompletion.
   - [📁 Project Structure](#-project-structure)
   - [📄 License](#-license)
   - [📝 Version History](#-version-history)
+    - [v2.0.0 - Complete Go Rewrite 🚀](#v200---complete-go-rewrite-)
+    - [v1.0.0 - Original Python Implementation](#v100---original-python-implementation)
 
 ## 📝 Overview
 
-PromCurl is a tool that allows you to query Prometheus metrics from the command line. It provides autocompletion for metric names, making it easier to construct queries without having to remember exact metric names.
+PromCurl is a modern, feature-rich tool that allows you to query Prometheus metrics from the command line with intelligent autocompletion. Built in Go for performance and reliability, it provides an intuitive interface for exploring and querying your Prometheus metrics.
 
 ## ✨ Features
 
-- 🔍 Query Prometheus metrics from the command line
-- 🔄 Advanced autocompletion:
-  - Metric names autocompletion
-  - Label names autocompletion (after typing '{')
-  - Label values autocompletion (after typing 'label=') with optional real values for common labels (job, instance, env, etc.)
-  - Comma and closing brace autocompletion (after selecting a label value)
-  - Recursive label autocompletion (after selecting a comma) with real values for common labels
-  - Common operators autocompletion
-- 📊 Display results in a formatted table with clear header separation
-- 🔁 Interactive mode with continuous query support (exit with Ctrl+C)
-- 💻 Cross-platform support (Linux, macOS, Windows)
-- 🔒 TLS support with optional certificate verification
-- 🔐 Basic authentication support
+### 🔍 Core Functionality
+- **Interactive Query Interface**: Query Prometheus metrics with a user-friendly command-line interface
+- **Formatted Table Output**: Display results in clean, organized tables with automatic column alignment
+- **Continuous Query Mode**: Stay in the application after each query for efficient metric exploration
+- **Cross-platform Support**: Works seamlessly on Linux, macOS, and Windows
+
+### 🔄 Advanced Autocompletion
+- **📊 Metric Names**: Smart autocompletion for all available Prometheus metrics
+- **🏷️ Label Names**: Context-aware label suggestions when typing `metric{`
+- **💎 Label Values**: Real-time label value suggestions with caching for performance
+- **⚡ PromQL Expressions**: Complete support for:
+  - Prometheus operators (`+`, `-`, `*`, `/`, `==`, `!=`, etc.)
+  - Built-in functions (`rate()`, `sum()`, `avg()`, `count()`, etc.)
+  - Time range selectors (`[5m]`, `[1h]`, `[1d]`, etc.)
+  - Query modifiers (`by`, `without`, `on`, `ignoring`, etc.)
+- **🔧 Context-Aware Suggestions**: Intelligent suggestions based on cursor position and query context
+- **🚀 Navigation Support**: Tab completion with arrow key navigation for easy selection
+
+### 🔒 Security & Authentication
+- **🔐 Basic Authentication**: Support for username/password authentication
+- **🛡️ TLS Support**: Full HTTPS support with optional certificate verification
+- **🔓 Insecure Mode**: Skip certificate verification for development environments
+
+### ⚙️ Configuration
+- **🌐 Custom Prometheus URLs**: Connect to any Prometheus server
+- **📝 Command History**: Persistent command history across sessions
+- **🎛️ Configurable Options**: Flexible command-line options for all features
 
 ## 📥 Installation
 
 ### From Source
 
 1. Clone the repository:
-   ```
+   ```bash
    git clone https://github.com/yourusername/promcurl.git
    cd promcurl
    ```
 
 2. Build the binary:
-   ```
+   ```bash
    make build
    ```
 
 3. (Optional) Install the binary to your PATH:
-   ```
-   cp promcurl /usr/local/bin/
+   ```bash
+   cp bin/promcurl /usr/local/bin/
    ```
 
 ### Using Go
 
-```
+```bash
 go install github.com/yourusername/promcurl/cmd/promcurl@latest
 ```
 
@@ -78,13 +98,17 @@ go install github.com/yourusername/promcurl/cmd/promcurl@latest
 1. Make sure Prometheus is running and accessible at `http://localhost:9090` (default).
 
 2. Run PromCurl:
-   ```
+   ```bash
    ./bin/promcurl
    ```
 
-3. Enter a Prometheus query when prompted. You can use Tab for autocompletion of metric names.
+3. Enter a Prometheus query when prompted. Use Tab for autocompletion of:
+   - Metric names
+   - Label names (after typing `{`)
+   - Label values (after typing `label=`)
+   - Functions and operators
 
-4. The results will be displayed in a formatted table with a clear separation between headers and data.
+4. The results will be displayed in a formatted table with clear headers and separators.
 
 5. The application remains active after executing a query, allowing you to enter additional queries.
 
@@ -99,52 +123,47 @@ PromCurl supports the following command line options:
 --username             Username for basic authentication
 --password             Password for basic authentication
 --insecure             Skip TLS certificate verification
---enable-label-values  Enable autocompletion for label values (may increase startup time)
+--enable-label-values  Enable autocompletion for label values (default: true)
 --help, -h             Show help
 --version              Show version information
 ```
 
 ### Examples
 
-Basic usage with default settings:
-```
+**Basic usage with default settings:**
+```bash
 ./bin/promcurl
 ```
 
-Connecting to a custom Prometheus server:
-```
+**Connecting to a custom Prometheus server:**
+```bash
 ./bin/promcurl --url="http://prometheus-server:9090"
 ```
 
-Using a custom path:
-```
+**Using a custom path:**
+```bash
 ./bin/promcurl --url="https://monitoring.example.com/prometheus"
 ```
 
-With authentication:
-```
+**With authentication:**
+```bash
 ./bin/promcurl --url="https://prometheus-server:9090" --username="admin" --password="secret"
 ```
 
-With special characters in credentials:
-```
+**With special characters in credentials:**
+```bash
 ./bin/promcurl --url="https://prometheus-server:9090" --username="user@domain" --password="p@ssw0rd!"
 ```
 
-Skipping TLS verification (for self-signed certificates):
-```
+**Skipping TLS verification (for self-signed certificates):**
+```bash
 ./bin/promcurl --url="https://prometheus-server:9090" --insecure
 ```
 
-Enabling label values autocompletion (with animated loading dots):
+**Disabling label values autocompletion (for faster startup):**
+```bash
+./bin/promcurl --enable-label-values=false
 ```
-./bin/promcurl --enable-label-values
-```
-This will display animated loading dots while fetching label values for autocompletion.
-
-Note: When using values with special characters, you can use either of these formats:
-- With equals sign: `--option="value with spaces"`
-- With space: `--option "value with spaces"`
 
 ## 🛠️ Development
 
@@ -155,25 +174,25 @@ Note: When using values with special characters, you can use either of these for
 
 ### Building
 
-```
+```bash
 make build
 ```
 
 ### Testing
 
-```
+```bash
 make test
 ```
 
 ### Cross-compilation
 
 Build for all platforms:
-```
+```bash
 make build-all
 ```
 
 Or for specific platforms:
-```
+```bash
 make build-linux
 make build-windows
 make build-macos
@@ -181,11 +200,18 @@ make build-macos
 
 ## 📁 Project Structure
 
-- `cmd/promcurl/`: Main application entry point
-- `internal/prometheus/`: Prometheus API client
-- `internal/display/`: Table display functionality
-- `test/`: Integration tests
-- `python/`: Original Python implementation (v1.0)
+```
+promcurl/
+├── cmd/promcurl/           # Main application entry point
+├── internal/
+│   ├── completion/         # Advanced autocompletion system
+│   ├── prometheus/         # Prometheus API client
+│   └── display/           # Table display functionality
+├── test/                  # Integration tests
+├── python/               # Original Python implementation (v1.0)
+├── bin/                  # Compiled binaries
+└── Makefile             # Build automation
+```
 
 ## 📄 License
 
@@ -193,13 +219,34 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📝 Version History
 
-- v2.8: Fixed performance issue with label values autocompletion
-- v2.7: Enhanced recursive label autocompletion with real values for common labels
-- v2.6: Added recursive label autocompletion after comma
-- v2.5: Added autocompletion for comma and closing brace after label values
-- v2.4: Improved loading animation with animated dots for label values autocompletion
-- v2.3: Added loading indicator for label values autocompletion
-- v2.2: Made label values autocompletion optional to improve stability
-- v2.1: Enhanced label values autocompletion with real values for common labels
-- v2.0: Go implementation with improved structure and features
-- v1.0: Original Python implementation
+### v2.0.0 - Complete Go Rewrite 🚀
+**Major Features:**
+- **🔄 Complete rewrite in Go** for better performance and reliability
+- **🏗️ Clean architecture** with modular design (`cmd/`, `internal/` structure)
+- **🔧 Advanced autocompletion system** with context-aware suggestions
+- **📊 Intelligent table display** with automatic column organization
+- **🔐 Enhanced security** with full TLS and authentication support
+- **⚡ Performance optimizations** with caching and efficient data structures
+- **🧪 Comprehensive testing** with unit and integration tests
+- **📦 Cross-platform binaries** with automated GitHub Actions builds
+- **🎛️ Flexible configuration** with extensive command-line options
+
+**Autocompletion Improvements:**
+- Smart metric name completion with fuzzy matching
+- Context-aware label and label value suggestions
+- Complete PromQL syntax support (operators, functions, modifiers)
+- Efficient caching system for label values
+- Tab navigation with arrow key support
+- Priority-based suggestion ordering
+
+**Technical Enhancements:**
+- Refactored codebase with proper Go package structure
+- Comprehensive documentation following Go best practices
+- Automated testing and continuous integration
+- Memory-efficient data structures and algorithms
+- Robust error handling and user feedback
+
+### v1.0.0 - Original Python Implementation
+- Basic Prometheus querying functionality
+- Simple table output
+- Basic metric name autocompletion

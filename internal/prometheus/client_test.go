@@ -20,10 +20,10 @@ func TestGetMetrics(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// Temporarily override the PrometheusURL
-	originalURL := PrometheusURL
-	PrometheusURL = server.URL + "/api/v1"
-	defer func() { PrometheusURL = originalURL }()
+	// Temporarily override the DefaultClient BaseURL
+	originalURL := DefaultClient.BaseURL
+	DefaultClient.BaseURL = server.URL + "/api/v1"
+	defer func() { DefaultClient.BaseURL = originalURL }()
 
 	// Call the function
 	metrics, err := GetMetrics()
@@ -76,10 +76,10 @@ func TestQueryPrometheus(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// Temporarily override the PrometheusURL
-	originalURL := PrometheusURL
-	PrometheusURL = server.URL + "/api/v1"
-	defer func() { PrometheusURL = originalURL }()
+	// Temporarily override the DefaultClient BaseURL
+	originalURL := DefaultClient.BaseURL
+	DefaultClient.BaseURL = server.URL + "/api/v1"
+	defer func() { DefaultClient.BaseURL = originalURL }()
 
 	// Call the function
 	results, err := QueryPrometheus("test_query")
@@ -113,5 +113,83 @@ func TestQueryPrometheus(t *testing.T) {
 
 	if value != "42.5" {
 		t.Errorf("Expected value '42.5', got '%s'", value)
+	}
+}
+
+func TestGetLabels(t *testing.T) {
+	// Create a mock server
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/v1/labels" {
+			// Return a sample response
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{"status":"success","data":["job","instance","__name__"]}`))
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	// Temporarily override the DefaultClient BaseURL
+	originalURL := DefaultClient.BaseURL
+	DefaultClient.BaseURL = server.URL + "/api/v1"
+	defer func() { DefaultClient.BaseURL = originalURL }()
+
+	// Call the function
+	labels, err := GetLabels()
+
+	// Check the results
+	if err != nil {
+		t.Errorf("GetLabels() returned an error: %v", err)
+	}
+
+	if len(labels) != 3 {
+		t.Errorf("Expected 3 labels, got %d", len(labels))
+	}
+
+	expectedLabels := []string{"job", "instance", "__name__"}
+	for i, label := range labels {
+		if label != expectedLabels[i] {
+			t.Errorf("Expected label %s, got %s", expectedLabels[i], label)
+		}
+	}
+}
+
+func TestGetLabelValues(t *testing.T) {
+	// Create a mock server
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/api/v1/label/job/values" {
+			// Return a sample response
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{"status":"success","data":["prometheus","node_exporter","alertmanager"]}`))
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	}))
+	defer server.Close()
+
+	// Temporarily override the DefaultClient BaseURL
+	originalURL := DefaultClient.BaseURL
+	DefaultClient.BaseURL = server.URL + "/api/v1"
+	defer func() { DefaultClient.BaseURL = originalURL }()
+
+	// Call the function
+	values, err := GetLabelValues("job")
+
+	// Check the results
+	if err != nil {
+		t.Errorf("GetLabelValues() returned an error: %v", err)
+	}
+
+	if len(values) != 3 {
+		t.Errorf("Expected 3 values, got %d", len(values))
+	}
+
+	expectedValues := []string{"prometheus", "node_exporter", "alertmanager"}
+	for i, value := range values {
+		if value != expectedValues[i] {
+			t.Errorf("Expected value %s, got %s", expectedValues[i], value)
+		}
 	}
 }

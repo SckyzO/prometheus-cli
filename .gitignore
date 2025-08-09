@@ -4,8 +4,6 @@
 *.dll
 *.so
 *.dylib
-promcurl
-promcurl_*
 
 # Test binary, built with `go test -c`
 *.test
