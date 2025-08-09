@@ -38,10 +38,13 @@ var (
 	debug = kingpin.Flag("debug", "Enable verbose error output for debugging.").Bool()
 
 	// historyFile specifies the path to the command history file.
-	historyFile = kingpin.Flag("history-file", "Path to the command history file. If not set, a temporary file is used.").String()
+	historyFile = kingpin.Flag("history-file", "Path to the command history file. If not set, a temporary file is used.\n").String()
 
 	// persistHistory determines whether the history file should be persisted across sessions.
-	persistHistory = kingpin.Flag("persist-history", "Do not delete the history file on exit. Only applicable if --history-file is set or a temporary file is used.").Bool()
+persistHistory = kingpin.Flag("persist-history", "Do not delete the history file on exit. Only applicable if --history-file is set or a temporary file is used.\n").Bool()
+
+	// tips enables the display of detailed feature and usage tips on startup.
+	tips = kingpin.Flag("tips", "Display detailed feature and usage tips on startup.").Bool()
 )
 
 // main is the entry point of the Prometheus CLI application.
@@ -87,8 +90,7 @@ func main() {
 			historyFilePath = *historyFile
 		} else {
 			// Join with current working directory if a relative path is provided
-		
-cwd, err := os.Getwd()
+			cwd, err := os.Getwd()
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Warning: could not get current working directory: %v\n", err)
 				historyFilePath = *historyFile // Fallback to direct use if cwd fails
@@ -172,22 +174,24 @@ cwd, err := os.Getwd()
 // printWelcomeMessage displays the welcome message and available features.
 func printWelcomeMessage() {
 	fmt.Println("Enter Prometheus queries. Press Ctrl+C to exit.")
-	fmt.Println("Features enabled:")
-	fmt.Println("  - 📊 Metrics autocompletion")
-	fmt.Println("  - 🏷️  Labels and values autocompletion" + func() string {
-		if !*enableLabelValues {
-			return " (disabled with --enable-label-values=false)"
-		}
-		return ""
-	}())
-	fmt.Println("  - ⚡ Prometheus expressions autocompletion (operators, functions, time ranges)")
-	fmt.Println("  - 🔧 Smart context-aware suggestions")
-	fmt.Println()
-	fmt.Println("💡 Tips:")
-	fmt.Println("  - Type 'rat' + Tab → 'rate('")
-	fmt.Println("  - After metric{} + Tab → operators and modifiers")
-	fmt.Println("  - Inside functions + Tab → metrics")
-	fmt.Println("  - After operators + Tab → metrics and functions")
+
+	if *tips {
+		fmt.Println(`
+✨ Features:
+  - 📊 Metric Names: Smart autocompletion for all available Prometheus metrics
+  - 🏷️  Label Names: Context-aware label suggestions when typing ` + "`metric{`" + `
+  - 💎 Label Values: Real-time label value suggestions with caching for performance
+  - ⚡ PromQL Expressions: Complete support for operators, built-in functions, time range selectors, and query modifiers
+  - 🔧 Context-Aware Suggestions: Intelligent suggestions based on cursor position and query context
+  - 🚀 Navigation Support: Tab completion with arrow key navigation for easy selection
+
+💡 Tips:
+  - Type 'rat' + Tab → 'rate('
+  - After metric{} + Tab → operators and modifiers
+  - Inside functions + Tab → metrics
+  - After operators + Tab → metrics and functions
+`)
+	}
 }
 
 // runQueryLoop runs the main interactive loop for processing user queries.
