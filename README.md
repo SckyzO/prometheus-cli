@@ -1,6 +1,6 @@
-# 🔍 PromCurl
+# 🔍 Prometheus CLI
 
-[![Build and Test](https://github.com/yourusername/promcurl/actions/workflows/build.yml/badge.svg)](https://github.com/yourusername/promcurl/actions/workflows/build.yml)
+[![Build Prometheus CLI](https://github.com/yourusername/prometheus-cli/actions/workflows/build.yml/badge.svg)](https://github.com/yourusername/prometheus-cli/actions/workflows/build.yml)
 [![Go Version](https://img.shields.io/badge/Go-1.21%2B-blue.svg)](https://golang.org/doc/devel/release.html#go1.21)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -8,7 +8,7 @@ A powerful command-line tool for querying Prometheus metrics with advanced autoc
 
 ## 📋 Table of Contents
 
-- [🔍 PromCurl](#-promcurl)
+- [🔍 Prometheus CLI](#-prometheus-cli)
   - [📋 Table of Contents](#-table-of-contents)
   - [📝 Overview](#-overview)
   - [✨ Features](#-features)
@@ -35,7 +35,7 @@ A powerful command-line tool for querying Prometheus metrics with advanced autoc
 
 ## 📝 Overview
 
-PromCurl is a modern, feature-rich tool that allows you to query Prometheus metrics from the command line with intelligent autocompletion. Built in Go for performance and reliability, it provides an intuitive interface for exploring and querying your Prometheus metrics.
+Prometheus CLI is a modern, feature-rich tool that allows you to query Prometheus metrics from the command line with intelligent autocompletion. Built in Go for performance and reliability, it provides an intuitive interface for exploring and querying your Prometheus metrics.
 
 ## ✨ Features
 
@@ -73,8 +73,8 @@ PromCurl is a modern, feature-rich tool that allows you to query Prometheus metr
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/promcurl.git
-   cd promcurl
+   git clone https://github.com/yourusername/prometheus-cli.git
+   cd prometheus-cli
    ```
 
 2. Build the binary:
@@ -84,22 +84,22 @@ PromCurl is a modern, feature-rich tool that allows you to query Prometheus metr
 
 3. (Optional) Install the binary to your PATH:
    ```bash
-   cp bin/promcurl /usr/local/bin/
+   cp bin/prom-cli /usr/local/bin/
    ```
 
 ### Using Go
 
 ```bash
-go install github.com/yourusername/promcurl/cmd/promcurl@latest
+go install github.com/yourusername/prometheus-cli/cmd/prom-cli@latest
 ```
 
 ## 🚀 Usage
 
 1. Make sure Prometheus is running and accessible at `http://localhost:9090` (default).
 
-2. Run PromCurl:
+2. Run Prometheus CLI:
    ```bash
-   ./bin/promcurl
+   ./bin/prom-cli
    ```
 
 3. Enter a Prometheus query when prompted. Use Tab for autocompletion of:
@@ -116,7 +116,7 @@ go install github.com/yourusername/promcurl/cmd/promcurl@latest
 
 ### Command Line Options
 
-PromCurl supports the following command line options:
+Prometheus CLI supports the following command line options:
 
 ```
 --url                  Prometheus server URL (default: http://localhost:9090)
@@ -132,37 +132,37 @@ PromCurl supports the following command line options:
 
 **Basic usage with default settings:**
 ```bash
-./bin/promcurl
+./bin/prom-cli
 ```
 
 **Connecting to a custom Prometheus server:**
 ```bash
-./bin/promcurl --url="http://prometheus-server:9090"
+./bin/prom-cli --url="http://prometheus-server:9090"
 ```
 
 **Using a custom path:**
 ```bash
-./bin/promcurl --url="https://monitoring.example.com/prometheus"
+./bin/prom-cli --url="https://monitoring.example.com/prometheus"
 ```
 
 **With authentication:**
 ```bash
-./bin/promcurl --url="https://prometheus-server:9090" --username="admin" --password="secret"
+./bin/prom-cli --url="https://prometheus-server:9090" --username="admin" --password="secret"
 ```
 
 **With special characters in credentials:**
 ```bash
-./bin/promcurl --url="https://prometheus-server:9090" --username="user@domain" --password="p@ssw0rd!"
+./bin/prom-cli --url="https://prometheus-server:9090" --username="user@domain" --password="p@ssw0rd!"
 ```
 
 **Skipping TLS verification (for self-signed certificates):**
 ```bash
-./bin/promcurl --url="https://prometheus-server:9090" --insecure
+./bin/prom-cli --url="https://prometheus-server:9090" --insecure
 ```
 
 **Disabling label values autocompletion (for faster startup):**
 ```bash
-./bin/promcurl --enable-label-values=false
+./bin/prom-cli --enable-label-values=false
 ```
 
 ## 🛠️ Development
@@ -201,8 +201,8 @@ make build-macos
 ## 📁 Project Structure
 
 ```
-promcurl/
-├── cmd/promcurl/           # Main application entry point
+prometheus-cli/
+├── cmd/prom-cli/           # Main application entry point
 ├── internal/
 │   ├── completion/         # Advanced autocompletion system
 │   ├── prometheus/         # Prometheus API client

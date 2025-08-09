@@ -1,4 +1,4 @@
-// Package main provides the command-line interface for PromCurl,
+// Package main provides the command-line interface for Prometheus CLI,
 // a tool for querying Prometheus metrics with advanced autocompletion.
 package main
 
@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"promcurl/internal/completion"
-	"promcurl/internal/display"
-	"promcurl/internal/prometheus"
+	"prometheus-cli/internal/completion"
+	"prometheus-cli/internal/display"
+	"prometheus-cli/internal/prometheus"
 
 	"github.com/alecthomas/kingpin/v2"
 	"github.com/chzyer/readline"
@@ -34,11 +34,11 @@ var (
 	enableLabelValues = kingpin.Flag("enable-label-values", "Enable autocompletion for label values.").Default("true").Bool()
 )
 
-// main is the entry point of the PromCurl application.
+// main is the entry point of the Prometheus CLI application.
 // It initializes the Prometheus client, sets up autocompletion, and runs the interactive query loop.
 func main() {
 	// Configure command-line argument parsing
-	kingpin.Version(version.Print("promcurl"))
+	kingpin.Version(version.Print("prom-cli"))
 	kingpin.HelpFlag.Short('h')
 	kingpin.Parse()
 
@@ -62,7 +62,7 @@ func main() {
 	// Set up readline interface with autocompletion and history
 	l, err := readline.NewEx(&readline.Config{
 		Prompt:          "\033[31m»\033[0m ",
-		HistoryFile:     "/tmp/promcurl_history.tmp",
+		HistoryFile:     "/tmp/prom_cli_history.tmp",
 		AutoComplete:    completer,
 		InterruptPrompt: "^C",
 		EOFPrompt:       "exit",

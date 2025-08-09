@@ -1,7 +1,7 @@
-# Makefile for promcurl
+# Makefile for Prometheus CLI
 
 # Variables
-BINARY_NAME=promcurl
+BINARY_NAME=prom-cli
 GO=go
 GOFMT=gofmt
 GOTEST=$(GO) test
@@ -38,7 +38,7 @@ all: test build
 
 build:
 	mkdir -p $(BIN_DIR)
-	CGO_ENABLED=0 $(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BIN_DIR)/$(BINARY_NAME) -v ./cmd/promcurl
+	CGO_ENABLED=0 $(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BIN_DIR)/$(BINARY_NAME) -v ./cmd/prom-cli
 
 clean:
 	$(GOCLEAN)
@@ -66,15 +66,15 @@ build-all: build-linux build-windows build-macos
 
 build-linux:
 	mkdir -p $(BIN_DIR)
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BINARY_UNIX) -v ./cmd/promcurl
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BINARY_UNIX) -v ./cmd/prom-cli
 
 build-windows:
 	mkdir -p $(BIN_DIR)
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BINARY_WINDOWS) -v ./cmd/promcurl
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 $(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BINARY_WINDOWS) -v ./cmd/prom-cli
 
 build-macos:
 	mkdir -p $(BIN_DIR)
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BINARY_MACOS) -v ./cmd/promcurl
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GOBUILD) -ldflags "$(LDFLAGS)" -o $(BINARY_MACOS) -v ./cmd/prom-cli
 
 # Help target
 help:

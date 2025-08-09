@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"promcurl/internal/prometheus"
+	"prometheus-cli/internal/prometheus"
 
 	"github.com/chzyer/readline"
 )

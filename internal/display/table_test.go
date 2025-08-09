@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"promcurl/internal/prometheus"
+	"prometheus-cli/internal/prometheus"
 )
 
 func TestDisplayTable(t *testing.T) {

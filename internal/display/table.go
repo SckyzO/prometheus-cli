@@ -7,7 +7,7 @@ import (
 	"os"
 	"sort"
 
-	"promcurl/internal/prometheus"
+	"prometheus-cli/internal/prometheus"
 
 	"github.com/olekukonko/tablewriter"
 )

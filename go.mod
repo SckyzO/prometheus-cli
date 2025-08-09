@@ -1,4 +1,4 @@
-module promcurl
+module prometheus-cli
 
 go 1.23.0
 

@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build Prometheus CLI
 
 on:
   push:
@@ -19,10 +19,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go-version }}
 
@@ -30,16 +30,16 @@ jobs:
       run: go mod download
 
     - name: Build
-      run: go build -v -o promcurl-${{ matrix.platform }} ./cmd/promcurl
+      run: go build -v -o prom-cli-${{ matrix.platform }} ./cmd/prom-cli
 
     - name: Test
       run: go test -v ./...
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: promcurl-${{ matrix.platform }}
-        path: promcurl-${{ matrix.platform }}
+        name: prom-cli-${{ matrix.platform }}
+        path: prom-cli-${{ matrix.platform }}
 
   release:
     name: Create Release
@@ -49,10 +49,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: Download all artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       
     - name: Create Release
       id: create_release
@@ -71,8 +71,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./promcurl-ubuntu-latest
-        asset_name: promcurl-linux
+        asset_path: ./prom-cli-ubuntu-latest
+        asset_name: prom-cli-linux
         asset_content_type: application/octet-stream
         
     - name: Upload Release Assets (macOS)
@@ -81,8 +81,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./promcurl-macos-latest
-        asset_name: promcurl-macos
+        asset_path: ./prom-cli-macos-latest
+        asset_name: prom-cli-macos
         asset_content_type: application/octet-stream
         
     - name: Upload Release Assets (Windows)
@@ -91,6 +91,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./promcurl-windows-latest
-        asset_name: promcurl-windows.exe
+        asset_path: ./prom-cli-windows-latest
+        asset_name: prom-cli-windows.exe
         asset_content_type: application/octet-stream

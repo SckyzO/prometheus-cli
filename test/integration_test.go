@@ -8,17 +8,17 @@ import (
 
 // TestBinaryCompiles verifies that the binary can be compiled
 func TestBinaryCompiles(t *testing.T) {
-	cmd := exec.Command("go", "build", "-o", "promcurl_test", "../cmd/promcurl")
+	cmd := exec.Command("go", "build", "-o", "prom_cli_test", "../cmd/prom-cli")
 	err := cmd.Run()
 	if err != nil {
 		t.Fatalf("Failed to compile binary: %v", err)
 	}
 
 	// Clean up
-	defer os.Remove("promcurl_test")
+	defer os.Remove("prom_cli_test")
 
 	// Check that the binary exists
-	_, err = os.Stat("promcurl_test")
+	_, err = os.Stat("prom_cli_test")
 	if os.IsNotExist(err) {
 		t.Fatal("Binary was not created")
 	}
@@ -31,17 +31,17 @@ func TestMockPrometheus(t *testing.T) {
 	// requires user input, we'll just verify that it can be executed.
 
 	// First, compile the binary
-	cmd := exec.Command("go", "build", "-o", "promcurl_test", "../cmd/promcurl")
+	cmd := exec.Command("go", "build", "-o", "prom_cli_test", "../cmd/prom-cli")
 	err := cmd.Run()
 	if err != nil {
 		t.Fatalf("Failed to compile binary: %v", err)
 	}
 
 	// Clean up
-	defer os.Remove("promcurl_test")
+	defer os.Remove("prom_cli_test")
 
 	// Check that the binary exists and is executable
-	info, err := os.Stat("promcurl_test")
+	info, err := os.Stat("prom_cli_test")
 	if os.IsNotExist(err) {
 		t.Fatal("Binary was not created")
 	}
