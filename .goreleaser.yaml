@@ -20,7 +20,7 @@ builds:
       - 386
       - arm64
     binary: "prom-cli"
-    main: "."
+    main: "./cmd/prom-cli"
     ldflags:
       - "-s -w"
       - "-X main.version={{.Version}}"
