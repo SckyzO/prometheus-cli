@@ -46,7 +46,7 @@ jobs:
           args: --verbose
 
       - name: Run GoReleaser Dev
-        uses: goreleaser/goreleaser-action@v7
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: '~> v2'
@@ -94,7 +94,7 @@ jobs:
           version: v2.3.1
           args: --verbose
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v7
+        uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
           version: '~> v2'
