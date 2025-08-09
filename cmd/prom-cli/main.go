@@ -11,7 +11,7 @@ import (
 	"prometheus-cli/internal/display"
 	"prometheus-cli/internal/prometheus"
 
-	"github.com/alecthomas/kingpin/v2"
+	kingpin "github.com/alecthomas/kingpin/v2"
 	"github.com/chzyer/readline"
 	"github.com/prometheus/common/version"
 )
