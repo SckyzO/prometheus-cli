@@ -1,6 +1,6 @@
 # 🔍 Prometheus CLI
 
-[![Build Prometheus CLI](https://github.com/yourusername/prometheus-cli/actions/workflows/build.yml/badge.svg)](https://github.com/yourusername/prometheus-cli/actions/workflows/build.yml)
+[![Build Prometheus CLI](https://github.com/yourusername/prometheus-cli/actions/workflows/build.yml/badge.svg)](https://github.com/yourusername/prometheus-cli/actions/workflows/release.yml)
 [![Go Version](https://img.shields.io/badge/Go-1.21%2B-blue.svg)](https://golang.org/doc/devel/release.html#go1.21)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
