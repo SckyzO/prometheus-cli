@@ -5,7 +5,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"path/filepath" // Added for filepath.Join
+	"path/filepath"
 	"strings"
 
 	"prometheus-cli/internal/completion"
@@ -19,32 +19,22 @@ import (
 
 // Command-line flags for configuring the application behavior.
 var (
-	// url specifies the Prometheus server URL to connect to.
-	url = kingpin.Flag("url", "Prometheus server URL.").Default("http://localhost:9090").String()
-
-	// username specifies the username for basic authentication.
+	// Prometheus Connection Flags
+	url      = kingpin.Flag("url", "Prometheus server URL.").Default("http://localhost:9090").String()
 	username = kingpin.Flag("username", "Username for basic authentication.").String()
-
-	// password specifies the password for basic authentication.
 	password = kingpin.Flag("password", "Password for basic authentication.").String()
-
-	// insecure determines whether to skip TLS certificate verification.
 	insecure = kingpin.Flag("insecure", "Skip TLS certificate verification.").Bool()
 
-	// enableLabelValues controls whether label values autocompletion is enabled.
+	// Autocompletion Flags
 	enableLabelValues = kingpin.Flag("enable-label-values", "Enable autocompletion for label values.").Default("true").Bool()
 
-	// debug enables verbose error output for debugging purposes.
+	// History Flags
+	historyFile    = kingpin.Flag("history-file", "Path to the command history file.").String()
+	persistHistory = kingpin.Flag("persist-history", "Do not delete the history file on exit.").Bool()
+
+	// Display and Utility Flags
 	debug = kingpin.Flag("debug", "Enable verbose error output for debugging.").Bool()
-
-	// historyFile specifies the path to the command history file.
-	historyFile = kingpin.Flag("history-file", "Path to the command history file. If not set, a temporary file is used.\n").String()
-
-	// persistHistory determines whether the history file should be persisted across sessions.
-persistHistory = kingpin.Flag("persist-history", "Do not delete the history file on exit. Only applicable if --history-file is set or a temporary file is used.\n").Bool()
-
-	// tips enables the display of detailed feature and usage tips on startup.
-	tips = kingpin.Flag("tips", "Display detailed feature and usage tips on startup.").Bool()
+	tips  = kingpin.Flag("tips", "Display detailed feature and usage tips on startup.").Bool()
 )
 
 // main is the entry point of the Prometheus CLI application.
@@ -54,6 +44,13 @@ func main() {
 	kingpin.Version(version.Print("prom-cli"))
 	kingpin.HelpFlag.Short('h')
 	kingpin.Parse()
+
+	// Display welcome message and feature information if tips are enabled
+	if *tips {
+		printWelcomeMessage()
+	} else {
+		fmt.Println("Enter Prometheus queries. Press Ctrl+C to exit.")
+	}
 
 	// Initialize Prometheus client with user-provided configuration
 	if *debug {
@@ -67,15 +64,15 @@ func main() {
 
 	// Load available metrics from Prometheus for autocompletion
 	fmt.Print("Loading metrics...")
-		metrics, err := prometheus.GetMetrics()
-		if err != nil {
-			if *debug {
-				fmt.Printf("\rError getting metrics: %v\n", err)
-			} else {
-				fmt.Printf("\rError getting metrics. Use --debug for more details.\n")
-			}
-			os.Exit(1)
+	metrics, err := prometheus.GetMetrics()
+	if err != nil {
+		if *debug {
+			fmt.Printf("\rError getting metrics: %v\n", err)
+		} else {
+			fmt.Printf("\rError getting metrics. Use --debug for more details.\n")
 		}
+		os.Exit(1)
+	}
 	fmt.Printf("\rLoaded %d metrics successfully.\n", len(metrics))
 
 	// Initialize the advanced autocompletion system
@@ -164,9 +161,6 @@ func main() {
 		}
 	}()
 
-	// Display welcome message and feature information
-	printWelcomeMessage()
-
 	// Run the main interactive query loop
 	runQueryLoop(l)
 }
@@ -178,18 +172,18 @@ func printWelcomeMessage() {
 	if *tips {
 		fmt.Println(`
 ✨ Features:
-  - 📊 Metric Names: Smart autocompletion for all available Prometheus metrics
-  - 🏷️  Label Names: Context-aware label suggestions when typing ` + "`metric{`" + `
-  - 💎 Label Values: Real-time label value suggestions with caching for performance
-  - ⚡ PromQL Expressions: Complete support for operators, built-in functions, time range selectors, and query modifiers
-  - 🔧 Context-Aware Suggestions: Intelligent suggestions based on cursor position and query context
-  - 🚀 Navigation Support: Tab completion with arrow key navigation for easy selection
+	 - Metric Names: Smart autocompletion for all available Prometheus metrics
+	 - Label Names: Context-aware label suggestions when typing "metric{"
+	 - Label Values: Real-time label value suggestions with caching for performance
+	 - PromQL Expressions: Complete support for operators, built-in functions, time range selectors, and query modifiers
+	 - Context-Aware Suggestions: Intelligent suggestions based on cursor position and query context
+	 - Navigation Support: Tab completion with arrow key navigation for easy selection
 
 💡 Tips:
-  - Type 'rat' + Tab → 'rate('
-  - After metric{} + Tab → operators and modifiers
-  - Inside functions + Tab → metrics
-  - After operators + Tab → metrics and functions
+	 - Type 'rat' + Tab -> 'rate('
+	 - After metric{} + Tab -> operators and modifiers
+	 - Inside functions + Tab -> metrics
+	 - After operators + Tab -> metrics and functions
 `)
 	}
 }

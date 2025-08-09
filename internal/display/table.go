@@ -63,6 +63,28 @@ func DisplayTable(results []prometheus.QueryResult) {
 	headers := append([]string{"Metric"}, labels...)
 	headers = append(headers, "Value")
 
+	// Limit the number of columns to display to avoid overly wide tables
+	maxColumns := 10 // Metric + 8 most important labels + Value
+
+	if len(headers) > maxColumns {
+		// Keep only the first few labels
+		labels = labels[:maxColumns-2] // -2 for Metric and Value columns
+		// Update headers accordingly
+		headers = append([]string{"Metric"}, labels...)
+		headers = append(headers, "Value")
+	}
+
+	// Truncate long headers to improve readability
+	maxHeaderLength := 20
+	displayHeaders := make([]string, len(headers))
+	for i, header := range headers {
+		if len(header) > maxHeaderLength {
+			displayHeaders[i] = header[:maxHeaderLength-3] + "..."
+		} else {
+			displayHeaders[i] = header
+		}
+	}
+
 	// Initialize table writer with stdout as destination
 	table := tablewriter.NewWriter(os.Stdout)
 
@@ -78,7 +100,13 @@ func DisplayTable(results []prometheus.QueryResult) {
 		// Fill in label values in the correct column positions
 		for i, label := range labels {
 			// Column index is i+1 because metric name is at index 0
-			row[i+1] = result.Metric[label]
+			value := result.Metric[label]
+			// Truncate long values
+			if len(value) > maxHeaderLength {
+				row[i+1] = value[:maxHeaderLength-3] + "..."
+			} else {
+				row[i+1] = value
+			}
 		}
 
 		// Extract and format the metric value
@@ -97,7 +125,7 @@ func DisplayTable(results []prometheus.QueryResult) {
 
 	// Configure and render the table
 	// Using Header() and Bulk() methods for automatic formatting with separators
-	table.Header(headers)
+	table.Header(displayHeaders)
 
 	if err := table.Bulk(rows); err != nil {
 		fmt.Printf("Error adding bulk data to table: %v\n", err)

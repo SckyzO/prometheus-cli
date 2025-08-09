@@ -31,6 +31,7 @@ A powerful command-line tool for querying Prometheus metrics with advanced autoc
   - [📄 License](#-license)
   - [📝 Version History](#-version-history)
     - [v2.0.0 - Complete Go Rewrite 🚀](#v200---complete-go-rewrite-)
+    - [v2.1.0 - Enhanced Usability and Display 🚀](#v210---enhanced-usability-and-display-)
     - [v1.0.0 - Original Python Implementation](#v100---original-python-implementation)
 
 ## 📝 Overview
@@ -64,8 +65,9 @@ Prometheus CLI is a modern, feature-rich tool that allows you to query Prometheu
 
 ### ⚙️ Configuration
 - **🌐 Custom Prometheus URLs**: Connect to any Prometheus server
-- **📝 Command History**: Persistent command history across sessions
-- **🎛️ Configurable Options**: Flexible command-line options for all features
+- **📝 Command History**: Flexible command history management with options for persistent files and temporary files.
+- **🎛️ Configurable Options**: Flexible command-line options for all features, including history and debugging.
+- **🐛 Debugging**: Enable verbose output for detailed error diagnosis.
 
 ## 📥 Installation
 
@@ -124,6 +126,10 @@ Prometheus CLI supports the following command line options:
 --password             Password for basic authentication
 --insecure             Skip TLS certificate verification
 --enable-label-values  Enable autocompletion for label values (default: true)
+--history-file         Path to the command history file. If not set, a temporary file is used.
+--persist-history      Do not delete the history file on exit. Only applicable if --history-file is set or a temporary file is used.
+--debug                Enable verbose error output for debugging.
+--tips                 Display detailed feature and usage tips on startup.
 --help, -h             Show help
 --version              Show version information
 ```
@@ -241,12 +247,25 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Technical Enhancements:**
 - Refactored codebase with proper Go package structure
-- Comprehensive documentation following Go best practices
 - Automated testing and continuous integration
 - Memory-efficient data structures and algorithms
 - Robust error handling and user feedback
+
+### v2.1.0 - Enhanced Usability and Display 🚀
+**Major Features:**
+- **📝 Configurable History**: Added `--history-file` and `--persist-history` flags for flexible command history management.
+- **🐛 Improved Debugging**: Enhanced `--debug` flag with more verbose output for initialization and error diagnosis.
+- **💡 Optional Tips**: Introduced `--tips` flag to control the display of detailed feature and usage tips on startup.
+- **📊 Optimized Table Display**: Improved table rendering for queries with many labels, preventing excessive width issues.
+
+**Technical Enhancements:**
+- Refined error handling and logging for better debugging experience.
+- Improved command-line option parsing and validation.
+- Implemented intelligent column limiting and header truncation for better readability.
+- Fixed compilation issues with help text formatting.
 
 ### v1.0.0 - Original Python Implementation
 - Basic Prometheus querying functionality
 - Simple table output
 - Basic metric name autocompletion
+
