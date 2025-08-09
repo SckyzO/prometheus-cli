@@ -30,17 +30,30 @@ jobs:
     - name: Get dependencies
       run: go mod download
 
-    - name: Build
-      run: go build -v -o prom-cli-${{ runner.os }}-go${{ matrix.go-version }}${{ runner.os == 'Windows' && '.exe' || '' }} ./cmd/prom-cli
+    - name: Build (Unix)
+      if: runner.os != 'Windows'
+      run: go build -v -o prom-cli-${{ runner.os }}-go${{ matrix.go-version }} ./cmd/prom-cli
+
+    - name: Build (Windows)
+      if: runner.os == 'Windows'
+      run: go build -v -o prom-cli-${{ runner.os }}-go${{ matrix.go-version }}.exe ./cmd/prom-cli
 
     - name: Test
       run: go test -v ./...
 
-    - name: Upload artifact
+    - name: Upload artifact (Unix)
+      if: runner.os != 'Windows'
       uses: actions/upload-artifact@v4
       with:
         name: prom-cli-${{ runner.os }}-go${{ matrix.go-version }}
-        path: prom-cli-${{ runner.os }}-go${{ matrix.go-version }}${{ runner.os == 'Windows' && '.exe' || '' }}
+        path: prom-cli-${{ runner.os }}-go${{ matrix.go-version }}
+
+    - name: Upload artifact (Windows)
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: prom-cli-${{ runner.os }}-go${{ matrix.go-version }}
+        path: prom-cli-${{ runner.os }}-go${{ matrix.go-version }}.exe
 
   release:
     name: Create Release
