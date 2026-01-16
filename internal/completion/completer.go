@@ -268,53 +268,99 @@ func (a *AdvancedCompleter) Do(line []rune, pos int) (newLine [][]rune, length i
 	}
 
 	// Case 2: metric{ - suggest available labels for the metric
-	metricWithBraceRe := regexp.MustCompile(`([a-zA-Z_:][a-zA-Z0-9_:]*)\{$`)
+	// Supports partial label typing (e.g., "metric{inst")
+	metricWithBraceRe := regexp.MustCompile(`([a-zA-Z_:][a-zA-Z0-9_:]*)\{([a-zA-Z0-9_]*)$`)
 	if matches := metricWithBraceRe.FindStringSubmatch(text); matches != nil {
 		metricName := matches[1]
+		partialLabel := matches[2]
 		labels, err := getLabelsForMetric(metricName)
 		if err == nil && len(labels) > 0 {
 			var candidates [][]rune
 			for _, label := range labels {
-				candidates = append(candidates, []rune(label+"="))
+				// Filter candidates based on partial input
+				if strings.HasPrefix(label, partialLabel) {
+					// Return only the suffix to append
+					suffix := strings.TrimPrefix(label, partialLabel) + "="
+					candidates = append(candidates, []rune(suffix))
+				}
 			}
+			// Return length 0 to append suffix
 			return candidates, 0
 		}
 	}
 
-	// Case 3: label= - suggest quoted label values
-	labelEqualsRe := regexp.MustCompile(`([a-zA-Z_][a-zA-Z0-9_]*)=$`)
+	// Case 3: label= - suggest quoted label values (starting with quote)
+	// Supports partial value typing (e.g., 'label=val' -> suggests '"value"')
+	// Note: We don't support partial quotes here yet, user usually types label="...
+	// This case handles when user types label=v... and we want to suggest "value"
+	labelEqualsRe := regexp.MustCompile(`([a-zA-Z_][a-zA-Z0-9_]*)=([^"]*)$`)
 	if matches := labelEqualsRe.FindStringSubmatch(text); matches != nil && a.enableLabelValues {
 		// Extract metric name from the query context
 		metricRe := regexp.MustCompile(`([a-zA-Z_:][a-zA-Z0-9_:]*)\{`)
-		if metricMatches := metricRe.FindStringSubmatch(text); metricMatches != nil {
-			metricName := metricMatches[1]
+		// Find all matches and take the last one to handle nested or multiple queries
+		if metricMatches := metricRe.FindAllStringSubmatch(text, -1); len(metricMatches) > 0 {
+			// Take the last match which is closest to the cursor
+			metricName := metricMatches[len(metricMatches)-1][1]
 			labelName := matches[1]
+			partialValue := matches[2]
 
 			values, err := getLabelValuesForMetric(metricName, labelName)
 			if err == nil && len(values) > 0 {
 				var candidates [][]rune
 				for _, value := range values {
-					candidates = append(candidates, []rune("\""+value+"\""))
+					// Check if value matches partial input
+					if strings.HasPrefix(value, partialValue) {
+						// Suggest quoted value, appending only the missing part
+						// If user typed 'val', partialValue is 'val'. Value is 'value'.
+						// We want to complete to "value".
+						// So we append: "ue" + "
+						// Wait, if user typed 'label=val', we want 'label="value"'.
+						// This is tricky because of the opening quote.
+						// If we return suffix, we assume user typed correct prefix.
+						// User typed `val`. We want `"value"`.
+						// We can't just append suffix here easily if we want to add the opening quote too.
+						// Let's stick to full replacement for Case 3 if partialValue is empty,
+						// or handle it differently.
+						
+						// Actually, if user types `label=val`, it's invalid PromQL until quoted.
+						// Ideally we replace `val` with `"value"`.
+						// So length MUST be len(partialValue).
+						// And candidate must be `"value"`.
+						
+						// Let's Revert to replacement strategy for Case 3 but verify it works.
+						// Unlike Case 2 and 4, Case 3 involves adding quotes around the partial input.
+						// Replace `val` with `"value"` -> Length 3, Candidate `"value"`.
+						
+						candidates = append(candidates, []rune("\""+value+"\""))
+					}
 				}
-				return candidates, 0
+				return candidates, len(partialValue)
 			}
 		}
 	}
 
-	// Case 4: label=" - suggest label values without additional quotes
-	labelEqualsQuoteRe := regexp.MustCompile(`([a-zA-Z_][a-zA-Z0-9_]*)="$`)
+	// Case 4: label=" - suggest label values inside quotes
+	// Supports partial value typing inside quotes (e.g., 'label="val')
+	labelEqualsQuoteRe := regexp.MustCompile(`([a-zA-Z_][a-zA-Z0-9_]*)="([^"]*)$`)
 	if matches := labelEqualsQuoteRe.FindStringSubmatch(text); matches != nil && a.enableLabelValues {
 		// Extract metric name from the query context
 		metricRe := regexp.MustCompile(`([a-zA-Z_:][a-zA-Z0-9_:]*)\{`)
-		if metricMatches := metricRe.FindStringSubmatch(text); metricMatches != nil {
-			metricName := metricMatches[1]
+		// Find all matches and take the last one to handle nested or multiple queries
+		if metricMatches := metricRe.FindAllStringSubmatch(text, -1); len(metricMatches) > 0 {
+			// Take the last match which is closest to the cursor
+			metricName := metricMatches[len(metricMatches)-1][1]
 			labelName := matches[1]
+			partialValue := matches[2]
 
 			values, err := getLabelValuesForMetric(metricName, labelName)
 			if err == nil && len(values) > 0 {
 				var candidates [][]rune
 				for _, value := range values {
-					candidates = append(candidates, []rune(value+"\""))
+					if strings.HasPrefix(value, partialValue) {
+						// Return suffix to append
+						suffix := strings.TrimPrefix(value, partialValue) + "\""
+						candidates = append(candidates, []rune(suffix))
+					}
 				}
 				return candidates, 0
 			}
