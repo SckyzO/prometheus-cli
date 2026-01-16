@@ -21,7 +21,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23'
+          go-version: '1.24'
       - name: Set build environment variables
         run: |
           echo "BUILD_DATE=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
@@ -83,7 +83,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.23'
+          go-version: '1.24'
       - name: Set build environment variables
         run: |
           echo "BUILD_DATE=$(date +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV

@@ -9,9 +9,9 @@ import (
 // TestBinaryCompiles verifies that the binary can be compiled
 func TestBinaryCompiles(t *testing.T) {
 	cmd := exec.Command("go", "build", "-o", "prom_cli_test", "../cmd/prom-cli")
-	err := cmd.Run()
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("Failed to compile binary: %v", err)
+		t.Fatalf("Failed to compile binary: %v\nOutput: %s", err, output)
 	}
 
 	// Clean up
@@ -36,9 +36,9 @@ func TestMockPrometheus(t *testing.T) {
 
 	// First, compile the binary
 	cmd := exec.Command("go", "build", "-o", "prom_cli_test", "../cmd/prom-cli")
-	err := cmd.Run()
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("Failed to compile binary: %v", err)
+		t.Fatalf("Failed to compile binary: %v\nOutput: %s", err, output)
 	}
 
 	// Clean up
