@@ -274,6 +274,11 @@ make build-macos
 
 ## 📝 Version History
 
+### v2.3.0 - Configuration File & Go Upgrade 🛠️
+**Major Features:**
+- **⚙️ Configuration File**: Added support for YAML configuration file (`~/.prom-cli.yaml` or via `--config`).
+- **🚀 Go 1.24 Upgrade**: Updated project and CI to use Go 1.24.
+
 ### v2.2.0 - Enhanced Authentication & Security 🔐
 **Major Features:**
 - **🔐 Enhanced Authentication**: Added support for `PROM_USERNAME` and `PROM_PASSWORD` environment variables.

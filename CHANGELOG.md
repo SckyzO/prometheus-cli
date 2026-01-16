@@ -1,3 +1,13 @@
+### v2.3.0 - Configuration File & Go Upgrade 🛠️
+**Major Features:**
+- **⚙️ Configuration File**: Added support for YAML configuration file (`~/.prom-cli.yaml` or via `--config`). Centralize your settings like URL, auth, and preferences without long CLI flags.
+- **📄 Example Config**: Included `prom-cli.example.yaml` to quickly get started with configuration.
+
+**Technical Enhancements:**
+- **🚀 Go 1.24 Upgrade**: Updated project and CI to use Go 1.24 for better performance and latest language features.
+- **📦 Dependencies**: Updated all core dependencies to their latest versions.
+- **🧪 CI/CD**: Enhanced integration tests and CI workflow for robustness.
+
 ### v2.2.0 - Enhanced Authentication & Security 🔐
 **Major Features:**
 - **🔐 Enhanced Authentication**: Added support for `PROM_USERNAME` and `PROM_PASSWORD` environment variables.
