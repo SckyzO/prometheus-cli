@@ -1,7 +1,7 @@
 # 🔍 Prometheus CLI
 
 [![Build Prometheus CLI](https://github.com/SckyzO/prometheus-cli/actions/workflows/release.yml/badge.svg)](https://github.com/SckyzO/prometheus-cli/actions/workflows/release.yml)
-[![Go Version](https://img.shields.io/badge/Go-1.21%2B-blue.svg)](https://golang.org/doc/devel/release.html#go1.21)
+[![Go Version](https://img.shields.io/badge/Go-1.24%2B-blue.svg)](https://golang.org/doc/devel/release.html#go1.24)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A powerful command-line tool for querying Prometheus metrics with advanced autocompletion capabilities.
@@ -48,36 +48,36 @@ Prometheus CLI is a modern, feature-rich tool that allows you to query Prometheu
 - **Cross-platform Support**: Works seamlessly on Linux, macOS, and Windows
 
 ### 🔄 Advanced Autocompletion
-- **📊 Metric Names**: Smart autocompletion for all available Prometheus metrics
-- **🏷️ Label Names**: Context-aware label suggestions when typing `metric{`
-- **💎 Label Values**: Real-time label value suggestions with caching for performance
-- **⚡ PromQL Expressions**: Complete support for:
+- **Metric Names**: Smart autocompletion for all available Prometheus metrics
+- **Label Names**: Context-aware label suggestions when typing `metric{`
+- **Label Values**: Real-time label value suggestions with caching for performance
+- **PromQL Expressions**: Complete support for:
   - Prometheus operators (`+`, `-`, `*`, `/`, `==`, `!=`, etc.)
   - Built-in functions (`rate()`, `sum()`, `avg()`, `count()`, etc.)
   - Time range selectors (`[5m]`, `[1h]`, `[1d]`, etc.)
   - Query modifiers (`by`, `without`, `on`, `ignoring`, etc.)
-- **🔧 Context-Aware Suggestions**: Intelligent suggestions based on cursor position and query context
-- **🚀 Navigation Support**: Tab completion with arrow key navigation for easy selection
+- **Context-Aware Suggestions**: Intelligent suggestions based on cursor position and query context
+- **Navigation Support**: Tab completion with arrow key navigation for easy selection
 
 ### 📈 Graph Mode (New!)
-- **📉 ASCII Charts**: Visualize metrics directly in your terminal with beautiful ASCII graphs.
-- **⏱️ Range Queries**: Support for time-range queries via `query_range` API.
-- **📅 Flexible Time Input**: 
+- **ASCII Charts**: Visualize metrics directly in your terminal with beautiful ASCII graphs.
+- **Range Queries**: Support for time-range queries via `query_range` API.
+- **Flexible Time Input**: 
   - Absolute dates (RFC3339, SQL-style)
   - Relative durations (e.g., `1h`, `30m` ago)
-- **🔍 Custom Resolution**: Adjust graph resolution with the `--step` flag.
+- **Custom Resolution**: Adjust graph resolution with the `--step` flag.
 
 ### 🔒 Security & Authentication
-- **🔐 Basic Authentication**: Support for username/password via flags, environment variables (`PROM_USERNAME`, `PROM_PASSWORD`), or password file.
-- **📂 Password File**: Securely provide passwords using the `--password-file` flag.
-- **🛡️ TLS Support**: Full HTTPS support with optional certificate verification
-- **🔓 Insecure Mode**: Skip certificate verification for development environments
+- **Basic Authentication**: Support for username/password via flags, environment variables (`PROM_USERNAME`, `PROM_PASSWORD`), or password file.
+- **Password File**: Securely provide passwords using the `--password-file` flag.
+- **TLS Support**: Full HTTPS support with optional certificate verification
+- **Insecure Mode**: Skip certificate verification for development environments
 
 ### ⚙️ Configuration
-- **🌐 Custom Prometheus URLs**: Connect to any Prometheus server
-- **📝 Command History**: Flexible command history management with options for persistent files and temporary files.
-- **🎛️ Configurable Options**: Flexible command-line options for all features, including history and debugging.
-- **🐛 Debugging**: Enable verbose output for detailed error diagnosis.
+- **Custom Prometheus URLs**: Connect to any Prometheus server
+- **Command History**: Flexible command history management with options for persistent files and temporary files.
+- **Configurable Options**: Flexible command-line options for all features, including history and debugging.
+- **Debugging**: Enable verbose output for detailed error diagnosis.
 
 ## 📥 Installation
 
@@ -320,71 +320,7 @@ make build-macos
 
 ## 📝 Version History
 
-### v2.4.1 - Autocompletion Fixes 🐛
-**Bug Fixes:**
-- Fixed duplication issues in autocompletion.
-- Improved context detection for nested queries.
-
-### v2.4.0 - ASCII Graph Mode 📈
-**Major Features:**
-- **📈 ASCII Graphs**: Visualize metrics in your terminal.
-- **⏱️ Range Queries**: Support for historical data analysis.
-- **📅 Time Control**: Flexible time range selection.
-
-### v2.3.0 - Configuration File & Go Upgrade 🛠️
-**Major Features:**
-- **⚙️ Configuration File**: Added support for YAML configuration file (`~/.prom-cli.yaml` or via `--config`).
-- **🚀 Go 1.24 Upgrade**: Updated project and CI to use Go 1.24.
-
-### v2.2.0 - Enhanced Authentication & Security 🔐
-**Major Features:**
-- **🔐 Enhanced Authentication**: Added support for `PROM_USERNAME` and `PROM_PASSWORD` environment variables.
-- **📂 Password File**: Added `--password-file` flag for secure password handling.
-- **🛡️ Security**: Improved security by allowing password input via file instead of command line flags.
-
-### v2.1.0 - Enhanced Usability and Display 🚀
-**Major Features:**
-- **📝 Configurable History**: Added `--history-file` and `--persist-history` flags for flexible command history management.
-- **🐛 Improved Debugging**: Enhanced `--debug` flag with more verbose output for initialization and error diagnosis.
-- **💡 Optional Tips**: Introduced `--tips` flag to control the display of detailed feature and usage tips on startup.
-- **📊 Optimized Table Display**: Improved table rendering for queries with many labels, preventing excessive width issues.
-
-**Technical Enhancements:**
-- Refined error handling and logging for better debugging experience.
-- Improved command-line option parsing and validation.
-- Implemented intelligent column limiting and header truncation for better readability.
-- Fixed compilation issues with help text formatting.
-
-### v2.0.0 - Complete Go Rewrite 🚀
-**Major Features:**
-- **🔄 Complete rewrite in Go** for better performance and reliability
-- **🏗️ Clean architecture** with modular design (`cmd/`, `internal/` structure)
-- **🔧 Advanced autocompletion system** with context-aware suggestions
-- **📊 Intelligent table display** with automatic column organization
-- **🔐 Enhanced security** with full TLS and authentication support
-- **⚡ Performance optimizations** with caching and efficient data structures
-- **🧪 Comprehensive testing** with unit and integration tests
-- **📦 Cross-platform binaries** with automated GitHub Actions builds
-- **🎛️ Flexible configuration** with extensive command-line options
-
-**Autocompletion Improvements:**
-- Smart metric name completion with fuzzy matching
-- Context-aware label and label value suggestions
-- Complete PromQL syntax support (operators, functions, modifiers)
-- Efficient caching system for label values
-- Tab navigation with arrow key support
-- Priority-based suggestion ordering
-
-**Technical Enhancements:**
-- Refactored codebase with proper Go package structure
-- Automated testing and continuous integration
-- Memory-efficient data structures and algorithms
-- Robust error handling and user feedback
-
-### v1.0.0 - Original Python Implementation
-- Basic Prometheus querying functionality
-- Simple table output
-- Basic metric name autocompletion
+For a detailed history of changes, please refer to the [CHANGELOG](CHANGELOG.md).
 
 ## 📁 Project Structure
 
