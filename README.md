@@ -235,6 +235,12 @@ make build-macos
 
 ## 📝 Version History
 
+### v2.2.0 - Enhanced Authentication & Security 🔐
+**Major Features:**
+- **🔐 Enhanced Authentication**: Added support for `PROM_USERNAME` and `PROM_PASSWORD` environment variables.
+- **📂 Password File**: Added `--password-file` flag for secure password handling.
+- **🛡️ Security**: Improved security by allowing password input via file instead of command line flags.
+
 ### v2.1.0 - Enhanced Usability and Display 🚀
 **Major Features:**
 - **📝 Configurable History**: Added `--history-file` and `--persist-history` flags for flexible command history management.
