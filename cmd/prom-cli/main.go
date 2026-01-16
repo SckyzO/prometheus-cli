@@ -20,10 +20,11 @@ import (
 // Command-line flags for configuring the application behavior.
 var (
 	// Prometheus Connection Flags
-	url      = kingpin.Flag("url", "Prometheus server URL.").Default("http://localhost:9090").String()
-	username = kingpin.Flag("username", "Username for basic authentication.").String()
-	password = kingpin.Flag("password", "Password for basic authentication.").String()
-	insecure = kingpin.Flag("insecure", "Skip TLS certificate verification.").Bool()
+	url          = kingpin.Flag("url", "Prometheus server URL.").Default("http://localhost:9090").String()
+	username     = kingpin.Flag("username", "Username for basic authentication.").Envar("PROM_USERNAME").String()
+	password     = kingpin.Flag("password", "Password for basic authentication.").Envar("PROM_PASSWORD").String()
+	passwordFile = kingpin.Flag("password-file", "Path to file containing password for basic authentication.").String()
+	insecure     = kingpin.Flag("insecure", "Skip TLS certificate verification.").Bool()
 
 	// Autocompletion Flags
 	enableLabelValues = kingpin.Flag("enable-label-values", "Enable autocompletion for label values.").Default("true").Bool()
@@ -44,6 +45,18 @@ func main() {
 	kingpin.Version(version.Print("prom-cli"))
 	kingpin.HelpFlag.Short('h')
 	kingpin.Parse()
+
+	// Handle password file if provided
+	if *passwordFile != "" {
+		if *password != "" {
+			kingpin.FatalUsage("Cannot use both --password and --password-file")
+		}
+		content, err := os.ReadFile(*passwordFile)
+		if err != nil {
+			kingpin.Fatalf("Error reading password file: %v", err)
+		}
+		*password = strings.TrimSpace(string(content))
+	}
 
 	// Display welcome message and feature information if tips are enabled
 	if *tips {

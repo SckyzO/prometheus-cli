@@ -59,7 +59,8 @@ Prometheus CLI is a modern, feature-rich tool that allows you to query Prometheu
 - **🚀 Navigation Support**: Tab completion with arrow key navigation for easy selection
 
 ### 🔒 Security & Authentication
-- **🔐 Basic Authentication**: Support for username/password authentication
+- **🔐 Basic Authentication**: Support for username/password via flags, environment variables (`PROM_USERNAME`, `PROM_PASSWORD`), or password file.
+- **📂 Password File**: Securely provide passwords using the `--password-file` flag.
 - **🛡️ TLS Support**: Full HTTPS support with optional certificate verification
 - **🔓 Insecure Mode**: Skip certificate verification for development environments
 
@@ -122,8 +123,9 @@ Prometheus CLI supports the following command line options:
 
 ```
 --url                  Prometheus server URL (default: http://localhost:9090)
---username             Username for basic authentication
---password             Password for basic authentication
+--username             Username for basic authentication (or via PROM_USERNAME env var)
+--password             Password for basic authentication (or via PROM_PASSWORD env var)
+--password-file        Path to file containing password for basic authentication
 --insecure             Skip TLS certificate verification
 --enable-label-values  Enable autocompletion for label values (default: true)
 --history-file         Path to the command history file. If not set, a temporary file is used.
@@ -151,9 +153,22 @@ Prometheus CLI supports the following command line options:
 ./bin/prom-cli --url="https://monitoring.example.com/prometheus"
 ```
 
-**With authentication:**
+**With authentication (Flags):**
 ```bash
 ./bin/prom-cli --url="https://prometheus-server:9090" --username="admin" --password="secret"
+```
+
+**With authentication (Environment Variables):**
+```bash
+export PROM_USERNAME="admin"
+export PROM_PASSWORD="secret"
+./bin/prom-cli --url="https://prometheus-server:9090"
+```
+
+**With authentication (Password File):**
+```bash
+echo "secret" > /tmp/pass
+./bin/prom-cli --url="https://prometheus-server:9090" --username="admin" --password-file="/tmp/pass"
 ```
 
 **Skipping TLS verification (for self-signed certificates):**
