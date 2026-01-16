@@ -320,6 +320,11 @@ make build-macos
 
 ## 📝 Version History
 
+### v2.4.1 - Autocompletion Fixes 🐛
+**Bug Fixes:**
+- Fixed duplication issues in autocompletion.
+- Improved context detection for nested queries.
+
 ### v2.4.0 - ASCII Graph Mode 📈
 **Major Features:**
 - **📈 ASCII Graphs**: Visualize metrics in your terminal.

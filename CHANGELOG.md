@@ -1,3 +1,9 @@
+### v2.4.1 - Autocompletion Fixes 🐛
+**Bug Fixes:**
+- **🐛 Completion Duplication**: Fixed an issue where autocompletion duplicated the typed prefix (e.g., `ins` becoming `insinstance`).
+- **🔍 Nested Queries**: Corrected label completion context detection for complex/nested queries (e.g., `rate(A) / rate(B)` now correctly targets `B`).
+- **✨ Partial Matching**: Improved support for filtering completion suggestions based on partial input.
+
 ### v2.4.0 - ASCII Graph Mode 📈
 **Major Features:**
 - **📈 ASCII Graphs**: Added support for visualizing range queries directly in the terminal using ASCII charts.
