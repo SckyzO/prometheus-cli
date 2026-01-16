@@ -1,3 +1,10 @@
+### v2.4.0 - ASCII Graph Mode 📈
+**Major Features:**
+- **📈 ASCII Graphs**: Added support for visualizing range queries directly in the terminal using ASCII charts.
+- **⏱️ Range Queries**: Implemented `query_range` support in the client.
+- **📅 Time Flags**: Added `--start`, `--end`, `--step`, and `--graph` flags for controlling time ranges and visualization.
+- **🧠 Smart Time Parsing**: Supports RFC3339, SQL-style timestamps, and relative durations (e.g., `1h`).
+
 ### v2.3.0 - Configuration File & Go Upgrade 🛠️
 **Major Features:**
 - **⚙️ Configuration File**: Added support for YAML configuration file (`~/.prom-cli.yaml` or via `--config`). Centralize your settings like URL, auth, and preferences without long CLI flags.

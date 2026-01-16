@@ -59,6 +59,14 @@ Prometheus CLI is a modern, feature-rich tool that allows you to query Prometheu
 - **🔧 Context-Aware Suggestions**: Intelligent suggestions based on cursor position and query context
 - **🚀 Navigation Support**: Tab completion with arrow key navigation for easy selection
 
+### 📈 Graph Mode (New!)
+- **📉 ASCII Charts**: Visualize metrics directly in your terminal with beautiful ASCII graphs.
+- **⏱️ Range Queries**: Support for time-range queries via `query_range` API.
+- **📅 Flexible Time Input**: 
+  - Absolute dates (RFC3339, SQL-style)
+  - Relative durations (e.g., `1h`, `30m` ago)
+- **🔍 Custom Resolution**: Adjust graph resolution with the `--step` flag.
+
 ### 🔒 Security & Authentication
 - **🔐 Basic Authentication**: Support for username/password via flags, environment variables (`PROM_USERNAME`, `PROM_PASSWORD`), or password file.
 - **📂 Password File**: Securely provide passwords using the `--password-file` flag.
@@ -182,6 +190,44 @@ echo "secret" > /tmp/pass
 ./bin/prom-cli --enable-label-values=false
 ```
 
+### Graph Mode Examples
+
+**Basic graph (defaults to last 1 hour):**
+```bash
+./bin/prom-cli --graph
+# Then type your query, e.g., 'rate(http_requests_total[5m])'
+```
+
+**Specific time range (last 3 hours):**
+```bash
+./bin/prom-cli --start="3h"
+```
+
+**Absolute time range with custom step:**
+```bash
+./bin/prom-cli --start="2024-01-01 12:00:00" --end="2024-01-01 13:00:00" --step="1m"
+```
+
+**Example Output:**
+```text
+node_network_receive_packets_total{device="eth0", instance="nodeexporter:9100", job="nodeexporter"}
+
+ 2141 ┤                                                                         ╭─────
+ 1934 ┤                                                                   ╭─────╯
+ 1727 ┤                                                              ╭────╯
+ 1520 ┤                                                          ╭───╯
+ 1313 ┤                                                    ╭─────╯
+ 1106 ┤                                             ╭──────╯
+  899 ┤                ╭╮                     ╭─────╯
+  692 ┤          ╭─────╯╰╮              ╭─────╯
+  485 ┤    ╭─────╯       │        ╭─────╯
+  278 ┼────╯             ╰╮╭──────╯
+   72 ┤                   ╰╯
+      └───────────────────────────────────────┬───────────────────────────────────────┘
+      14:17                                 14:35                                14:53
+                                    [ Time: 2026-01-16 ]
+```
+
 ## ⚙️ Configuration File
 
 Prometheus CLI supports a YAML configuration file to persist your settings.
@@ -273,6 +319,12 @@ make build-macos
 ```
 
 ## 📝 Version History
+
+### v2.4.0 - ASCII Graph Mode 📈
+**Major Features:**
+- **📈 ASCII Graphs**: Visualize metrics in your terminal.
+- **⏱️ Range Queries**: Support for historical data analysis.
+- **📅 Time Control**: Flexible time range selection.
 
 ### v2.3.0 - Configuration File & Go Upgrade 🛠️
 **Major Features:**

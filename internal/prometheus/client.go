@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 // PrometheusClient represents a configured client for the Prometheus API.
@@ -110,6 +111,19 @@ type QueryData struct {
 	Result     []QueryResult `json:"result"`     // Array of query results
 }
 
+// RangeQueryResult represents a single result from a Prometheus range query.
+// Unlike QueryResult, it contains a list of values over time.
+type RangeQueryResult struct {
+	Metric map[string]string `json:"metric"` // Metric labels
+	Values []interface{}     `json:"values"` // List of [timestamp, value] pairs
+}
+
+// RangeQueryData represents the data structure for range query responses.
+type RangeQueryData struct {
+	ResultType string             `json:"resultType"` // Should be "matrix"
+	Result     []RangeQueryResult `json:"result"`     // Array of range query results
+}
+
 // GetMetrics retrieves all available metric names from Prometheus.
 // It queries the special __name__ label to get all metric names in the system.
 //
@@ -201,6 +215,72 @@ func QueryPrometheus(query string) ([]QueryResult, error) {
 	}
 
 	var queryData QueryData
+	err = json.Unmarshal(dataBytes, &queryData)
+	if err != nil {
+		return nil, err
+	}
+
+	return queryData.Result, nil
+}
+
+// QueryRangePrometheus executes a PromQL range query against Prometheus.
+// It returns a matrix of values over a time range.
+//
+// Parameters:
+//   - query: The PromQL query string
+//   - start: Start time of the range
+//   - end: End time of the range
+//   - step: Query resolution step (e.g., 15s)
+//
+// Returns:
+//   - []RangeQueryResult: A slice of matrix results
+//   - error: Any error that occurred
+func QueryRangePrometheus(query string, start, end time.Time, step time.Duration) ([]RangeQueryResult, error) {
+	baseURL := fmt.Sprintf("%s/query_range", DefaultClient.BaseURL)
+
+	// Build query parameters
+	params := url.Values{}
+	params.Add("query", query)
+	params.Add("start", start.Format(time.RFC3339))
+	params.Add("end", end.Format(time.RFC3339))
+	params.Add("step", step.String())
+
+	// Construct the complete request URL
+	reqURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
+
+	resp, err := DefaultClient.doRequest(reqURL)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			fmt.Printf("Error closing response body: %v\n", err)
+		}
+	}()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var response PrometheusResponse
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if status is success
+	if response.Status != "success" {
+		return nil, fmt.Errorf("query failed with status: %s", response.Status)
+	}
+
+	// Convert the generic response data to typed RangeQueryData structure
+	dataBytes, err := json.Marshal(response.Data)
+	if err != nil {
+		return nil, err
+	}
+
+	var queryData RangeQueryData
 	err = json.Unmarshal(dataBytes, &queryData)
 	if err != nil {
 		return nil, err

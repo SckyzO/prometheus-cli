@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/chzyer/readline v1.5.1
+	github.com/guptarohit/asciigraph v0.7.3
 	github.com/olekukonko/tablewriter v1.1.2
 	github.com/prometheus/common v0.67.5
 	gopkg.in/yaml.v3 v3.0.1

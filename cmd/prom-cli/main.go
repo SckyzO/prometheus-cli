@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"prometheus-cli/internal/completion"
 	"prometheus-cli/internal/config"
@@ -63,6 +64,12 @@ func main() {
 		// Display and Utility Flags
 		debug = app.Flag("debug", "Enable verbose error output for debugging.").Default(fmt.Sprintf("%v", cfg.Debug)).Bool()
 		tips  = app.Flag("tips", "Display detailed feature and usage tips on startup.").Default(fmt.Sprintf("%v", cfg.Tips)).Bool()
+
+		// Graph Flags
+		graphMode = app.Flag("graph", "Enable graph mode for range queries.").Default(fmt.Sprintf("%v", cfg.Graph)).Bool()
+		startTime = app.Flag("start", "Start time for range query (RFC3339, SQL, or duration like 1h).").Default(cfg.Start).String()
+		endTime   = app.Flag("end", "End time for range query (RFC3339, SQL, or duration like 1h).").Default(cfg.End).String()
+		step      = app.Flag("step", "Query resolution step (e.g. 15s, 1m).").Default(cfg.Step).String()
 	)
 
 	kingpin.MustParse(app.Parse(os.Args[1:]))
@@ -202,7 +209,7 @@ func main() {
 	}()
 
 	// Run the main interactive query loop
-	runQueryLoop(l, *debug)
+	runQueryLoop(l, *debug, *graphMode, *startTime, *endTime, *step)
 }
 
 // findConfigPath looks for a configuration file.
@@ -266,8 +273,49 @@ func printWelcomeMessage(showTips bool) {
 	}
 }
 
+// parseTime parses a time string which can be a RFC3339 timestamp, a SQL-like timestamp, or a duration.
+// If it's a duration, it's relative to now (subtracted).
+func parseTime(input string) (time.Time, error) {
+	if input == "" {
+		return time.Time{}, fmt.Errorf("empty time string")
+	}
+
+	// Try parsing as duration (relative to now)
+	if d, err := time.ParseDuration(input); err == nil {
+		return time.Now().Add(-d), nil
+	}
+
+	// Try RFC3339
+	if t, err := time.Parse(time.RFC3339, input); err == nil {
+		return t, nil
+	}
+
+	// Try SQL-like format (2006-01-02 15:04:05)
+	// We assume local time zone if not specified
+	if t, err := time.ParseInLocation("2006-01-02 15:04:05", input, time.Local); err == nil {
+		return t, nil
+	}
+
+	return time.Time{}, fmt.Errorf("unsupported time format: %s", input)
+}
+
 // runQueryLoop runs the main interactive loop for processing user queries.
-func runQueryLoop(l *readline.Instance, debugMode bool) {
+func runQueryLoop(l *readline.Instance, debugMode bool, graphMode bool, startTimeStr, endTimeStr, stepStr string) {
+	// If a start time is provided, we default to graph mode unless explicitly disabled
+	if startTimeStr != "" {
+		graphMode = true
+	}
+
+	// Parse step if provided, default to 1m
+	stepDuration := time.Minute
+	if stepStr != "" {
+		if d, err := time.ParseDuration(stepStr); err == nil {
+			stepDuration = d
+		} else if debugMode {
+			fmt.Printf("Warning: Invalid step duration '%s', defaulting to 1m\n", stepStr)
+		}
+	}
+
 	for {
 		line, err := l.Readline()
 		if err == readline.ErrInterrupt {
@@ -282,17 +330,57 @@ func runQueryLoop(l *readline.Instance, debugMode bool) {
 			continue
 		}
 
-		// Execute the Prometheus query and display results
-		results, err := prometheus.QueryPrometheus(query)
-		if err != nil {
-			if debugMode {
-				fmt.Printf("Error executing query: %v\n", err)
-			} else {
-				fmt.Printf("Error executing query. Use --debug for more details.\n")
+		if graphMode {
+			// Parse Start Time
+			start := time.Now().Add(-1 * time.Hour) // Default: 1 hour ago
+			if startTimeStr != "" {
+				if s, err := parseTime(startTimeStr); err == nil {
+					start = s
+				} else if debugMode {
+					fmt.Printf("Error parsing start time: %v\n", err)
+				}
 			}
-			continue
-		}
 
-		display.DisplayTable(results)
+			// Parse End Time
+			end := time.Now()
+			if endTimeStr != "" {
+				// Special case: if end is a duration, it might mean "until 10m ago"
+				// but parseTime subtracts duration from now.
+				// If user puts "end=10m", parseTime returns Now-10m, which is correct.
+				if e, err := parseTime(endTimeStr); err == nil {
+					end = e
+				} else if debugMode {
+					fmt.Printf("Error parsing end time: %v\n", err)
+				}
+			}
+
+			if debugMode {
+				fmt.Printf("Debug: Range Query: Start=%s, End=%s, Step=%s\n", start, end, stepDuration)
+			}
+
+			results, err := prometheus.QueryRangePrometheus(query, start, end, stepDuration)
+			if err != nil {
+				if debugMode {
+					fmt.Printf("Error executing range query: %v\n", err)
+				} else {
+					fmt.Printf("Error executing query. Use --debug for more details.\n")
+				}
+				continue
+			}
+			display.DisplayGraph(results)
+
+		} else {
+			// Standard Instant Query
+			results, err := prometheus.QueryPrometheus(query)
+			if err != nil {
+				if debugMode {
+					fmt.Printf("Error executing query: %v\n", err)
+				} else {
+					fmt.Printf("Error executing query. Use --debug for more details.\n")
+				}
+				continue
+			}
+			display.DisplayTable(results)
+		}
 	}
 }

@@ -18,6 +18,10 @@ type Config struct {
 	PersistHistory    bool   `yaml:"persist_history"`
 	Debug             bool   `yaml:"debug"`
 	Tips              bool   `yaml:"tips"`
+	Graph             bool   `yaml:"graph"`
+	Start             string `yaml:"start"`
+	End               string `yaml:"end"`
+	Step              string `yaml:"step"`
 }
 
 // NewConfig returns a Config with default values.
