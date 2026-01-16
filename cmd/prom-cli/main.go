@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"prometheus-cli/internal/completion"
+	"prometheus-cli/internal/config"
 	"prometheus-cli/internal/display"
 	"prometheus-cli/internal/prometheus"
 
@@ -17,58 +18,83 @@ import (
 	"github.com/prometheus/common/version"
 )
 
-// Command-line flags for configuring the application behavior.
-var (
-	// Prometheus Connection Flags
-	url          = kingpin.Flag("url", "Prometheus server URL.").Default("http://localhost:9090").String()
-	username     = kingpin.Flag("username", "Username for basic authentication.").Envar("PROM_USERNAME").String()
-	password     = kingpin.Flag("password", "Password for basic authentication.").Envar("PROM_PASSWORD").String()
-	passwordFile = kingpin.Flag("password-file", "Path to file containing password for basic authentication.").String()
-	insecure     = kingpin.Flag("insecure", "Skip TLS certificate verification.").Bool()
-
-	// Autocompletion Flags
-	enableLabelValues = kingpin.Flag("enable-label-values", "Enable autocompletion for label values.").Default("true").Bool()
-
-	// History Flags
-	historyFile    = kingpin.Flag("history-file", "Path to the command history file.").String()
-	persistHistory = kingpin.Flag("persist-history", "Do not delete the history file on exit.").Bool()
-
-	// Display and Utility Flags
-	debug = kingpin.Flag("debug", "Enable verbose error output for debugging.").Bool()
-	tips  = kingpin.Flag("tips", "Display detailed feature and usage tips on startup.").Bool()
-)
-
 // main is the entry point of the Prometheus CLI application.
 // It initializes the Prometheus client, sets up autocompletion, and runs the interactive query loop.
 func main() {
-	// Configure command-line argument parsing
-	kingpin.Version(version.Print("prom-cli"))
-	kingpin.HelpFlag.Short('h')
-	kingpin.Parse()
+	// 1. Determine config file path (Priority: Flag --config > Home Dir > Default None)
+	configPath := findConfigPath()
+
+	// 2. Load configuration (start with defaults, overwrite with file if exists)
+	cfg := config.NewConfig()
+	if configPath != "" {
+		loadedCfg, err := config.LoadFromFile(configPath)
+		if err == nil {
+			cfg = loadedCfg
+		} else if isExplicitConfigFlag() {
+			// Only fail if user explicitly asked for a config file that fails to load
+			fmt.Fprintf(os.Stderr, "Error loading config file %s: %v\n", configPath, err)
+			os.Exit(1)
+		}
+	}
+
+	// 3. Define Flags (using Config values as Defaults)
+	// Kingpin priority: Flag > Envar > Default (which is now Config)
+	app := kingpin.New("prom-cli", "A powerful command-line tool for querying Prometheus metrics.")
+	app.Version(version.Print("prom-cli"))
+	app.HelpFlag.Short('h')
+
+	var (
+		cfgFile = app.Flag("config", "Path to configuration file.").Default(configPath).String()
+
+		// Prometheus Connection Flags
+		url          = app.Flag("url", "Prometheus server URL.").Default(cfg.URL).String()
+		username     = app.Flag("username", "Username for basic authentication.").Envar("PROM_USERNAME").Default(cfg.Username).String()
+		password     = app.Flag("password", "Password for basic authentication.").Envar("PROM_PASSWORD").Default(cfg.Password).String()
+		passwordFile = app.Flag("password-file", "Path to file containing password for basic authentication.").Default(cfg.PasswordFile).String()
+		insecure     = app.Flag("insecure", "Skip TLS certificate verification.").Default(fmt.Sprintf("%v", cfg.Insecure)).Bool()
+
+		// Autocompletion Flags
+		enableLabelValues = app.Flag("enable-label-values", "Enable autocompletion for label values.").Default(fmt.Sprintf("%v", cfg.EnableLabelValues)).Bool()
+
+		// History Flags
+		historyFile    = app.Flag("history-file", "Path to the command history file.").Default(cfg.HistoryFile).String()
+		persistHistory = app.Flag("persist-history", "Do not delete the history file on exit.").Default(fmt.Sprintf("%v", cfg.PersistHistory)).Bool()
+
+		// Display and Utility Flags
+		debug = app.Flag("debug", "Enable verbose error output for debugging.").Default(fmt.Sprintf("%v", cfg.Debug)).Bool()
+		tips  = app.Flag("tips", "Display detailed feature and usage tips on startup.").Default(fmt.Sprintf("%v", cfg.Tips)).Bool()
+	)
+
+	kingpin.MustParse(app.Parse(os.Args[1:]))
 
 	// Handle password file if provided
 	if *passwordFile != "" {
 		if *password != "" {
-			kingpin.FatalUsage("Cannot use both --password and --password-file")
+			app.FatalUsage("Cannot use both --password and --password-file")
 		}
 		content, err := os.ReadFile(*passwordFile)
 		if err != nil {
-			kingpin.Fatalf("Error reading password file: %v", err)
+			app.Fatalf("Error reading password file: %v", err)
 		}
 		*password = strings.TrimSpace(string(content))
 	}
 
 	// Display welcome message and feature information if tips are enabled
 	if *tips {
-		printWelcomeMessage()
+		printWelcomeMessage(*tips)
 	} else {
 		fmt.Println("Enter Prometheus queries. Press Ctrl+C to exit.")
 	}
 
 	// Initialize Prometheus client with user-provided configuration
 	if *debug {
+		if configPath != "" && *cfgFile == configPath {
+			fmt.Printf("Debug: Loaded configuration from %s\n", configPath)
+		}
 		fmt.Printf("Debug: Setting Prometheus URL to %s/api/v1\n", *url)
-		fmt.Printf("Debug: Setting Basic Auth with username: %s\n", *username)
+		if *username != "" {
+			fmt.Printf("Debug: Setting Basic Auth with username: %s\n", *username)
+		}
 		fmt.Printf("Debug: Setting TLS InsecureSkipVerify to %t\n", *insecure)
 	}
 	prometheus.SetPrometheusURL(*url + "/api/v1")
@@ -146,13 +172,10 @@ func main() {
 		}
 
 		// Schedule the history file to be removed if persistence is not requested.
-		if *debug {
-			fmt.Printf("Debug: shouldRemoveHistoryFile is %t before defer registration.\n", shouldRemoveHistoryFile)
-		}
 		if shouldRemoveHistoryFile {
 			defer func() {
 				if *debug {
-					fmt.Printf("Debug: Inside defer. shouldRemoveHistoryFile is %t. Attempting to remove history file: %s\n", shouldRemoveHistoryFile, historyFilePath)
+					fmt.Printf("Debug: Removing history file: %s\n", historyFilePath)
 				}
 				if err := os.Remove(historyFilePath); err != nil {
 					fmt.Fprintf(os.Stderr, "Warning: could not remove history file %s: %v\n", historyFilePath, err)
@@ -179,14 +202,52 @@ func main() {
 	}()
 
 	// Run the main interactive query loop
-	runQueryLoop(l)
+	runQueryLoop(l, *debug)
+}
+
+// findConfigPath looks for a configuration file.
+// Priority:
+// 1. --config flag in os.Args
+// 2. $HOME/.prom-cli.yaml
+func findConfigPath() string {
+	// 1. Check args
+	for i, arg := range os.Args {
+		if arg == "--config" && i+1 < len(os.Args) {
+			return os.Args[i+1]
+		}
+		if strings.HasPrefix(arg, "--config=") {
+			return strings.TrimPrefix(arg, "--config=")
+		}
+	}
+
+	// 2. Check Home Directory
+	home, err := os.UserHomeDir()
+	if err == nil {
+		defaultPath := filepath.Join(home, ".prom-cli.yaml")
+		if _, err := os.Stat(defaultPath); err == nil {
+			return defaultPath
+		}
+	}
+
+	return ""
+}
+
+// isExplicitConfigFlag checks if the user explicitly provided the --config flag.
+// This is used to decide whether to error out if the file is missing.
+func isExplicitConfigFlag() bool {
+	for _, arg := range os.Args {
+		if strings.HasPrefix(arg, "--config") {
+			return true
+		}
+	}
+	return false
 }
 
 // printWelcomeMessage displays the welcome message and available features.
-func printWelcomeMessage() {
+func printWelcomeMessage(showTips bool) {
 	fmt.Println("Enter Prometheus queries. Press Ctrl+C to exit.")
 
-	if *tips {
+	if showTips {
 		fmt.Print(`
 ✨ Features:
 	 - Metric Names: Smart autocompletion for all available Prometheus metrics
@@ -206,7 +267,7 @@ func printWelcomeMessage() {
 }
 
 // runQueryLoop runs the main interactive loop for processing user queries.
-func runQueryLoop(l *readline.Instance) {
+func runQueryLoop(l *readline.Instance, debugMode bool) {
 	for {
 		line, err := l.Readline()
 		if err == readline.ErrInterrupt {
@@ -224,7 +285,7 @@ func runQueryLoop(l *readline.Instance) {
 		// Execute the Prometheus query and display results
 		results, err := prometheus.QueryPrometheus(query)
 		if err != nil {
-			if *debug {
+			if debugMode {
 				fmt.Printf("Error executing query: %v\n", err)
 			} else {
 				fmt.Printf("Error executing query. Use --debug for more details.\n")

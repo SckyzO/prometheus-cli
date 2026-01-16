@@ -1,0 +1,25 @@
+# Prometheus CLI Configuration File Example
+# Rename this file to .prom-cli.yaml and place it in your home directory ($HOME/.prom-cli.yaml)
+# or pass it with the --config flag.
+
+# Prometheus Server URL
+url: "http://localhost:9090"
+
+# Authentication (Optional)
+# username: "admin"
+# password: "secret" # It is recommended to use password_file instead
+# password_file: "/path/to/secret_password_file"
+
+# TLS Configuration
+insecure: false
+
+# Autocompletion
+enable_label_values: true
+
+# History
+# history_file: "/home/user/.prom_cli_history"
+# persist_history: true
+
+# Debugging & Usage
+debug: false
+tips: true

@@ -22,6 +22,7 @@ A powerful command-line tool for querying Prometheus metrics with advanced autoc
   - [🚀 Usage](#-usage)
     - [Command Line Options](#command-line-options)
     - [Examples](#examples)
+  - [⚙️ Configuration File](#️-configuration-file)
   - [🛠️ Development](#️-development)
     - [Prerequisites](#prerequisites)
     - [Building](#building)
@@ -180,6 +181,44 @@ echo "secret" > /tmp/pass
 ```bash
 ./bin/prom-cli --enable-label-values=false
 ```
+
+## ⚙️ Configuration File
+
+Prometheus CLI supports a YAML configuration file to persist your settings.
+
+### File Location
+
+By default, the application looks for a configuration file at `$HOME/.prom-cli.yaml`.
+You can also specify a custom path using the `--config` flag:
+
+```bash
+./bin/prom-cli --config /path/to/config.yaml
+```
+
+### Format
+
+The configuration file uses YAML format. Keys match the command-line flags (using underscores). Here is an example with available options:
+
+```yaml
+url: "http://prometheus-server:9090"
+username: "admin"
+# password: "secret" # Recommended to use password_file instead
+password_file: "/path/to/secret"
+insecure: false
+enable_label_values: true
+history_file: "/home/user/.prom_history"
+persist_history: true
+debug: false
+tips: true
+```
+
+### Precedence
+
+The application determines configuration values in the following order (highest priority first):
+1. **Command Line Flags** (e.g., `--url`)
+2. **Environment Variables** (e.g., `PROM_USERNAME`)
+3. **Configuration File** (values in `.prom-cli.yaml`)
+4. **Default Values**
 
 ## 📸 Screenshots
 

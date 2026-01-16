@@ -9,11 +9,13 @@ require (
 	github.com/chzyer/readline v1.5.1
 	github.com/olekukonko/tablewriter v1.0.9
 	github.com/prometheus/common v0.65.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/fatih/color v1.15.0 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
